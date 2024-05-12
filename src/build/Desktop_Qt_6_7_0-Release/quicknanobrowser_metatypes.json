@@ -1,0 +1,44 @@
+[
+    {
+    },
+    {
+        "classes": [
+            {
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "auto"
+                    },
+                    {
+                        "name": "QML.Singleton",
+                        "value": "true"
+                    }
+                ],
+                "className": "Utils",
+                "methods": [
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "userInput",
+                                "type": "QString"
+                            }
+                        ],
+                        "name": "fromUserInput",
+                        "returnType": "QUrl"
+                    }
+                ],
+                "object": true,
+                "qualifiedClassName": "Utils",
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ]
+            }
+        ],
+        "inputFile": "utils.h",
+        "outputRevision": 68
+    }
+]
