@@ -1,13 +1,20 @@
+#include "quickwindow.h"
+#ifndef QT_NO_WIDGETS
+#include <QtWidgets/QApplication>
+typedef QApplication Application;
+#else
 #include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+typedef QGuiApplication Application;
+#endif
 #include <QtWebEngine/qtwebengineglobal.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-    QGuiApplication app(argc, argv);
+    Application app(argc, argv);
+
     QtWebEngine::initialize();
-    QQmlApplicationEngine appEngine;
-    appEngine.load(QUrl("main.qml"));
+
+    ApplicationEngine appEngine;
 
     return app.exec();
 }
