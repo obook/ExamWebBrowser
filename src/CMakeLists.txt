@@ -1,111 +1,81 @@
-# Copyright (C) 2023 The Qt Company Ltd.
-# SPDX-License-Identifier: BSD-3-Clause
+cmake_minimum_required(VERSION 3.5)
 
-cmake_minimum_required(VERSION 3.16)
-project(quicknanobrowser LANGUAGES CXX)
+project(ExamWebBrowser VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-if(NOT DEFINED INSTALL_EXAMPLESDIR)
-    set(INSTALL_EXAMPLESDIR "examples")
-endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(INSTALL_EXAMPLEDIR "${INSTALL_EXAMPLESDIR}/webenginequick/quicknanobrowser")
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick WebEngineQuick)
+set(TS_FILES ExamWebBrowser_fr_FR.ts)
 
-qt_add_executable(quicknanobrowser
-    main.cpp
-    utils.h
+set(PROJECT_SOURCES
+        main.cpp
+        mainwindow.cpp
+        mainwindow.h
+        mainwindow.ui
+        ${TS_FILES}
 )
 
-if(WIN32)
-    set_property(
-        TARGET quicknanobrowser
-        APPEND PROPERTY
-            SOURCES quicknanobrowser.exe.manifest)
-endif()
-
-set_target_properties(quicknanobrowser PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_GUI_IDENTIFIER "io.qt.examples.webenginequick.quicknanobrowser"
-)
-
-target_link_libraries(quicknanobrowser PUBLIC
-    Qt::Core
-    Qt::Gui
-    Qt::Qml
-    Qt::Quick
-    Qt::WebEngineQuick
-)
-
-qt_add_qml_module(quicknanobrowser
-    URI BrowserUtils
-    VERSION 1.0
-    RESOURCE_PREFIX /
-)
-
-# Resources:
-set(resources_resource_files
-    "ApplicationRoot.qml"
-    "BrowserDialog.qml"
-    "BrowserWindow.qml"
-    "DownloadView.qml"
-    "FindBar.qml"
-    "FullScreenNotification.qml"
-    "WebAuthDialog.qml"
-)
-
-qt_add_resources(quicknanobrowser "resources"
-    PREFIX
-        "/"
-    FILES
-        ${resources_resource_files}
-)
-
-set(resources1_resource_files
-    "icons/3rdparty/go-next.png"
-    "icons/3rdparty/go-previous.png"
-    "icons/3rdparty/process-stop.png"
-    "icons/3rdparty/view-refresh.png"
-)
-
-qt_add_resources(quicknanobrowser "resources1"
-    PREFIX
-        "/icons"
-    BASE
-        "icons/3rdparty"
-    FILES
-        ${resources1_resource_files}
-)
-
-if(TARGET Qt::Widgets)
-    target_link_libraries(quicknanobrowser PUBLIC
-        Qt::Widgets
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(ExamWebBrowser
+        MANUAL_FINALIZATION
+        ${PROJECT_SOURCES}
     )
-endif()
+# Define target properties for Android with Qt 6 as:
+#    set_property(TARGET ExamWebBrowser APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
+# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 
-if (APPLE)
-    set_target_properties(quicknanobrowser PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.cmake.macos.plist"
-    )
-
-    if (NOT CMAKE_GENERATOR STREQUAL "Xcode")
-        # Need to sign application for location permissions to work
-        if(QT_FEATURE_debug_and_release)
-            set(exe_path "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/")
-        else()
-            unset(exe_path)
-        endif()
-        add_custom_command(TARGET quicknanobrowser
-            POST_BUILD COMMAND codesign --force -s - ${exe_path}quicknanobrowser.app
+    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+else()
+    if(ANDROID)
+        add_library(ExamWebBrowser SHARED
+            ${PROJECT_SOURCES}
+        )
+# Define properties for Android with Qt 5 after find_package() calls as:
+#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    else()
+        add_executable(ExamWebBrowser
+            ${PROJECT_SOURCES}
         )
     endif()
+
+    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-install(TARGETS quicknanobrowser
-    RUNTIME DESTINATION "${INSTALL_EXAMPLEDIR}"
-    BUNDLE DESTINATION "${INSTALL_EXAMPLEDIR}"
-    LIBRARY DESTINATION "${INSTALL_EXAMPLEDIR}"
+target_link_libraries(ExamWebBrowser PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+# OBOOK 14052024
+find_package(Qt6 REQUIRED COMPONENTS WebEngineWidgets)
+target_link_libraries(ExamWebBrowser PRIVATE Qt${QT_VERSION_MAJOR}::WebEngineWidgets)
+
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an
+# explicit, fixed bundle identifier manually though.
+if(${QT_VERSION} VERSION_LESS 6.1.0)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.ExamWebBrowser)
+endif()
+set_target_properties(ExamWebBrowser PROPERTIES
+    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
 )
+
+include(GNUInstallDirs)
+install(TARGETS ExamWebBrowser
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(ExamWebBrowser)
+endif()
