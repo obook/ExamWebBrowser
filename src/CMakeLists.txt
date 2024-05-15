@@ -50,7 +50,7 @@ else()
 endif()
 
 target_link_libraries(ExamWebBrowser PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(${PROJECT_NAME} Qt${QT_VERSION_MAJOR}::Core) # Static ?
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core) # Static ?
 
 # OBOOK 14052024
 find_package(Qt6 REQUIRED COMPONENTS WebEngineWidgets)
