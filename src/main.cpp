@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         }
     }
     MainWindow w;
-    //w.setWindowState(Qt::WindowFullScreen);
+    w.setWindowState(Qt::WindowFullScreen);
     a.setWindowIcon(QIcon("./images/icon.png"));
     w.show();
     return a.exec();

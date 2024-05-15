@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 //#include <QCursor>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,9 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("ExamWebBrowser");
     setupToolBar();
     webview = new QWebEngineView(this);
-    // webview->load(QUrl("google.fr"));
     webview->load(QUrl("https://smb33.keosystems.com"));
     setCentralWidget(webview);
+    bFocusLost = false;
+    bToogleColors = false;
+    bWebViewHidden = false;
     QObject::connect(monTimer, SIGNAL(timeout()), this,SLOT(finTempo()));
 }
 
@@ -22,20 +25,27 @@ void MainWindow::setupToolBar()
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
     toolbar->setFixedHeight(36);
-    toolbar->setStyleSheet("QToolBar {background-color: grey;}");
+    toolbar->setStyleSheet("QToolBar {background-color: green;}");
     monTimer = new QTimer(this);
     connect(monTimer, SIGNAL(timeout()), this, SLOT(update()));
-    monTimer->start(8000);
+    monTimer->start(1000);
 }
 
 void MainWindow::finTempo()
 {
-    qDebug()<<"Fin Timer";
-}
-
-void MainWindow::FocusLost()
-{
-
+    if (bFocusLost==true)
+    {
+        if(bToogleColors==false)
+        {
+            toolbar->setStyleSheet("QToolBar {background-color: black;}");
+            bToogleColors = true;
+        }
+        else
+        {
+            toolbar->setStyleSheet("QToolBar {background-color: red;}");
+            bToogleColors = false;
+        }
+    }
 }
 
 /* Détection de la perte de focus */
@@ -43,9 +53,9 @@ bool MainWindow::event(QEvent *event)
 {
     switch (event->type()) {
     case QEvent::WindowActivate:
-        qDebug() << "Window has focus!!!";
-        toolbar->setStyleSheet("QToolBar {background-color: grey;}");
-        webview->setVisible(true);
+         qDebug() << "Window has focus!!!";
+         webview->setVisible(true);
+         bWebViewHidden = false;
         break;
     case QEvent::WindowDeactivate:
         qDebug() << "Window lost focus!!!";
@@ -54,6 +64,30 @@ bool MainWindow::event(QEvent *event)
         //QApplication::setOverrideCursor(cursor);
         //QApplication::changeOverrideCursor(cursor);
         webview->setVisible(false);
+        bWebViewHidden = true;
+        bFocusLost = true;
+        break;
+/*
+ *
+ * Voir
+ * https://stackoverflow.com/questions/6647970/how-can-i-capture-qkeysequence-from-qkeyevent-depending-on-current-keyboard-layo
+ * */
+
+    case QEvent::KeyPress: /* On n'a plus de KeyPress car la webview est cachée !!!!!!!!!!!!!! */
+        if(static_cast<QKeyEvent*>(event)->key() == Qt::Key_F1)
+        {
+            qDebug() << "TOUCHE F1";
+            toolbar->setStyleSheet("QToolBar {background-color: green;}");
+            bFocusLost = false;
+        }
+        break;
+    case QEvent::KeyRelease:
+        qDebug() << "Key Release Event for" << static_cast<QKeyEvent*>(event)->text();
+        if( bWebViewHidden == true )
+        {
+            webview->setVisible(true);
+            bWebViewHidden = false;
+        }
         break;
     default:
         break;

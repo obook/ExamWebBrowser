@@ -28,6 +28,9 @@ private:
     QToolBar* toolbar;
     void setupToolBar();
     QTimer *monTimer;
+    bool bFocusLost;
+    bool bToogleColors;
+    bool bWebViewHidden;
 
 protected:
     bool event(QEvent *event) override;
