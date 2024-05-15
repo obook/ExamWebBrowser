@@ -1,0 +1,6 @@
+Les dll se trouvent dans :
+
+
+Qt/6.7.0/msvc2019_64/bin
+Qt/6.7.0/msvc2019_64/bin
+Qt/Tools/QtDesignStudio/qt6_design_studio_reduced_version/bin
