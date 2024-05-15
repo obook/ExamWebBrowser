@@ -1,6 +1,32 @@
-Les dll se trouvent dans :
+Doc pour QT5
+https://wiki.qt.io/Deploy_an_Application_on_Windows/fr
+
+(Changer mingw48_32 si nécessaire)
+
+Déploiement initial (rapide et grossier)
+Fermer Qt Creator ;
+Copier les élements suivant dans C:\Deployment\
+La version release de MyApp.exe ;
+Tous les fichiers .dll de C:\Qt\5.2.1\mingw48_32\bin\ \ ;
+Tous les répertoires de C:\Qt\5.2.1\mingw48_32\plugins\ ;
+(Si vous utilisez QML) Tous les répertoires de C:\Qt\5.2.1\mingw48_32\qml\.
+Renommer C:\Qt en C:\QtHidden\ (Cela donne à votre PC un environnement propre, comme si Qt n’y était pas installé) ;
+Tester C:\Deployment\MyApp.exe.
+Si tout est OK : Renommer C:\QtHidden\ en C:\Qt
+
+Les dll se trouvent (?) dans :
+Qt/6.7.0/msvc2019_64/bin
+
+Missing : 
+Qt6WebEngineCore.dll
+qwindows.dll ?
+
+Error : the application failed to start because no qt platform plugin could be initialized
 
 
-Qt/6.7.0/msvc2019_64/bin
-Qt/6.7.0/msvc2019_64/bin
-Qt/Tools/QtDesignStudio/qt6_design_studio_reduced_version/bin
+
+New device
+https://stackoverflow.com/questions/58185648/how-to-bind-to-connect-disconnect-usb-device-event-in-windows-7-8-10-from-qt
+https://stackoverflow.com/questions/5043096/detecting-usb-notification-in-qt-on-windows
+https://stackoverflow.com/questions/38528684/detected-new-usb-device-connected-disconnected-on-qt
+https://www.qtcentre.org/threads/15409-USB-Win-Events-messages-Detecting-in-QT
