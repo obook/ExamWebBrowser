@@ -14,6 +14,7 @@ void QWebEngineView::loadFinished(bool ok) // This signal is emitted when a load
 
 Voir
 https://blog.csdn.net/CHAMSDONCON/article/details/124403358
+https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class-examples.html
 
 */
 
