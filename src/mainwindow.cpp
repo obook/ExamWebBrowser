@@ -16,6 +16,8 @@ Voir
 https://blog.csdn.net/CHAMSDONCON/article/details/124403358
 https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class-examples.html
 
+Il est possible de toute refaire avec webenginewidgets et être compatible Windows/Linux
+
 */
 
 MainWindow::MainWindow(QWidget *parent)
