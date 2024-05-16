@@ -2,6 +2,12 @@
 #include "./ui_mainwindow.h"
 //#include <QCursor>
 #include <QKeyEvent>
+#include <QDateTime>
+#include <QInputDialog>
+#include <QWebEngineProfile>
+#include <QWebEngineCookieStore>
+#include <QMessageBox>
+#include <QWebEnginePage>
 
 /*
 
@@ -28,8 +34,37 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("ExamWebBrowser");
     setupToolBar();
     webview = new QWebEngineView(this);
+    webview->setContextMenuPolicy(Qt::NoContextMenu);
+    //QWebEnginePage *page =  webview->page();
+    //page->
+    //connect(page, &QWebEnginePage::)
+    //webview->setUrl(QUrl("https://smb33.keosystems.com")); /* ne fait rien, Ok en reload */
     webview->load(QUrl("https://smb33.keosystems.com"));
+    webview->reload();
+/* Pose problème ...
+    QWebEngineProfile * engineProfile = webview->page()->profile();
+    engineProfile->clearHttpCache();
+    engineProfile->clearAllVisitedLinks();
+    engineProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    engineProfile->setHttpCacheType(QWebEngineProfile::NoCache);
+
+    QWebEngineCookieStore * pCookie = engineProfile->cookieStore();
+    pCookie->deleteAllCookies();
+    pCookie->deleteSessionCookies();
+*/
+
+    connect(webview, &QWebEngineView::loadStarted, [] {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+    });
+
+    connect(webview, &QWebEngineView::loadFinished, [] {
+        QApplication::restoreOverrideCursor();
+    });
+
     setCentralWidget(webview);
+
+
+
     bFocusLost = false;
     bToogleColors = false;
     bWebViewHidden = false;
@@ -43,9 +78,70 @@ void MainWindow::setupToolBar()
     toolbar->setMovable(false);
     toolbar->setFixedHeight(36);
     toolbar->setStyleSheet("QToolBar {background-color: green;}");
+
+    QWidget *spacerWidget = new QWidget(this);
+    spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    spacerWidget->setVisible(true);
+    toolbar->addWidget(spacerWidget);
+
+    PushButton = new QPushButton(this);
+    PushButton->setText("hello");
+    connect(PushButton, &QPushButton::released, this, &MainWindow::handleButton);
+
+    toolbar->addWidget(PushButton);
+
     monTimer = new QTimer(this);
     connect(monTimer, SIGNAL(timeout()), this, SLOT(update()));
     monTimer->start(1000);
+}
+
+void MainWindow::handleButton()
+{
+    if (bFocusLost==true)
+    {
+        QInputDialog Dialog = new QInputDialog;
+        Dialog.setCancelButtonText(QString("Abandon"));
+        Dialog.setOkButtonText(QString("Valider"));
+        bool ok;
+        QString text = Dialog.getText(this, tr("Déverouillage"), tr("Entrer le code:"), QLineEdit::Normal, tr(""), &ok);
+        if ( ok && !text.isEmpty() ) {
+            QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
+            if( text.contains(code_secret)  )
+            {
+                UnlockWebView();
+            }
+        }
+    }
+    else {
+        /*
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        reply = QMessageBox::question(this, "Quitter", "Voulez-vous quitter l'application?",
+                                      QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            QCoreApplication::exit();
+        } else {
+            qDebug() << "Yes was *not* clicked";
+        }
+*/
+
+        QMessageBox msgBox;
+        msgBox.setText("Voulez-vous quitter l'application?");
+        msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        //QAbstractButton *myYesButton = msgBox.addButton(QString("Quitter"), QMessageBox::Ok);
+        //QAbstractButton *myNoButton = msgBox.addButton(QString("Abandon"), QMessageBox::NoRole);
+        msgBox.setIcon(QMessageBox::Warning);
+        if( msgBox.exec() == QMessageBox::Ok ) {
+            QCoreApplication::exit();
+        }
+        else
+        {
+            UnlockWebView();
+        }
+
+    }
 }
 
 void MainWindow::finTempo()
@@ -54,15 +150,36 @@ void MainWindow::finTempo()
     {
         if(bToogleColors==false)
         {
+            PushButton->setText("Appel");
             toolbar->setStyleSheet("QToolBar {background-color: black;}");
             bToogleColors = true;
         }
         else
         {
+            PushButton->setText("Surveillant");
             toolbar->setStyleSheet("QToolBar {background-color: red;}");
             bToogleColors = false;
         }
+    } else {
+        /* Clock */
+
+        PushButton->setText(QDateTime::currentDateTime().toString("hh:mm"));
     }
+}
+
+
+void MainWindow::UnlockWebView() {
+    bFocusLost = false;
+    toolbar->setStyleSheet("QToolBar {background-color: green;}");
+    bWebViewHidden = false;
+    webview->setVisible(true);
+}
+
+void MainWindow::LockWebView() {
+    bFocusLost = true;
+    toolbar->setStyleSheet("QToolBar {background-color: red;}");
+    bWebViewHidden = true;
+    webview->setVisible(false);
 }
 
 /* Détection de la perte de focus */
@@ -70,47 +187,21 @@ bool MainWindow::event(QEvent *event)
 {
     switch (event->type()) {
     case QEvent::WindowActivate:
-         qDebug() << "Window has focus!!!";
-         webview->setVisible(true);
-         bWebViewHidden = false;
         break;
     case QEvent::WindowDeactivate:
-        qDebug() << "Window lost focus!!!";
         toolbar->setStyleSheet("QToolBar {background-color: red;}");
-        //QCursor cursor(Qt::BlankCursor);
-        //QApplication::setOverrideCursor(cursor);
-        //QApplication::changeOverrideCursor(cursor);
-        webview->setVisible(false);
-        bWebViewHidden = true;
-        bFocusLost = true;
-        break;
-/*
- *
- * Voir
- * https://stackoverflow.com/questions/6647970/how-can-i-capture-qkeysequence-from-qkeyevent-depending-on-current-keyboard-layo
- * */
-
-    case QEvent::KeyPress: /* On n'a plus de KeyPress car la webview est cachée !!!!!!!!!!!!!! */
-        if(static_cast<QKeyEvent*>(event)->key() == Qt::Key_F1)
-        {
-            qDebug() << "TOUCHE F1";
-            toolbar->setStyleSheet("QToolBar {background-color: green;}");
-            bFocusLost = false;
-        }
-        break;
-    case QEvent::KeyRelease:
-        qDebug() << "Key Release Event for" << static_cast<QKeyEvent*>(event)->text();
-        if( bWebViewHidden == true )
-        {
-            webview->setVisible(true);
-            bWebViewHidden = false;
-        }
+        LockWebView();
         break;
     default:
         break;
     }
 
     return QWidget::event(event);
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    event->ignore();
 }
 
 MainWindow::~MainWindow()

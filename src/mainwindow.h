@@ -6,6 +6,7 @@
 #include <QToolBar>
 #include <QTimer>
 #include <QEvent>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,7 +27,11 @@ private:
     Ui::MainWindow *ui;
     QWebEngineView *webview;
     QToolBar* toolbar;
+    QPushButton* PushButton;
     void setupToolBar();
+    void handleButton();
+    void UnlockWebView();
+    void LockWebView();
     QTimer *monTimer;
     bool bFocusLost;
     bool bToogleColors;
@@ -34,7 +39,8 @@ private:
 
 protected:
     bool event(QEvent *event) override;
-
+protected:
+    void closeEvent(QCloseEvent *event);
 public slots :
     void finTempo();
 
