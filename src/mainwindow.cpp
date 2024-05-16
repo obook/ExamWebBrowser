@@ -12,6 +12,9 @@ QWebEngineView::loadStarted() // This signal is emitted when a new load of the p
 QWebEngineView::loadProgress(int progress) // This signal is emitted every time an element in the web view completes loading
 void QWebEngineView::loadFinished(bool ok) // This signal is emitted when a load of the page has finished. ok will indicate whether the load was successful or an error occurred.
 
+Voir
+https://blog.csdn.net/CHAMSDONCON/article/details/124403358
+
 */
 
 MainWindow::MainWindow(QWidget *parent)
