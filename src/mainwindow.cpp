@@ -1,13 +1,5 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-//#include <QCursor>
-#include <QKeyEvent>
-#include <QDateTime>
-#include <QInputDialog>
-#include <QWebEngineProfile>
-#include <QWebEngineCookieStore>
-#include <QMessageBox>
-#include <QWebEnginePage>
 
 /*
 
@@ -63,11 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(webview);
 
+    UnlockWebView();
 
-
-    bFocusLost = false;
-    bToogleColors = false;
-    bWebViewHidden = false;
     QObject::connect(monTimer, SIGNAL(timeout()), this,SLOT(finTempo()));
 }
 
@@ -76,71 +65,78 @@ void MainWindow::setupToolBar()
     toolbar = addToolBar(tr("File"));
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
-    toolbar->setFixedHeight(36);
+    toolbar->setFixedHeight(48);
     toolbar->setStyleSheet("QToolBar {background-color: green;}");
+
+    PushButtonLeft = new QPushButton(this);
+    toolbar->addWidget(PushButtonLeft);
+    connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
 
     QWidget *spacerWidget = new QWidget(this);
     spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget->setVisible(true);
     toolbar->addWidget(spacerWidget);
 
-    PushButton = new QPushButton(this);
-    PushButton->setText("hello");
-    connect(PushButton, &QPushButton::released, this, &MainWindow::handleButton);
-
-    toolbar->addWidget(PushButton);
+    PushButtonRight = new QPushButton(this);
+    toolbar->addWidget(PushButtonRight);
+    connect(PushButtonRight, &QPushButton::released, this, &MainWindow::handleButtonRight);
 
     monTimer = new QTimer(this);
     connect(monTimer, SIGNAL(timeout()), this, SLOT(update()));
     monTimer->start(1000);
 }
 
-void MainWindow::handleButton()
-{
-    if (bFocusLost==true)
-    {
+void MainWindow::handleButtonRight() {
+    if (bFocusLost==true) {
+        bool ok;
         QInputDialog Dialog = new QInputDialog;
+        Dialog.setWindowTitle("EWB");
         Dialog.setCancelButtonText(QString("Abandon"));
         Dialog.setOkButtonText(QString("Valider"));
-        bool ok;
-        QString text = Dialog.getText(this, tr("Déverouillage"), tr("Entrer le code:"), QLineEdit::Normal, tr(""), &ok);
+        QString text = Dialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
         if ( ok && !text.isEmpty() ) {
             QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
-            if( text.contains(code_secret)  )
-            {
+            /* Si la chaine saisie contient le code secret */
+            if(text.contains(code_secret)) {
                 UnlockWebView();
             }
         }
     }
     else {
-        /*
         QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        reply = QMessageBox::question(this, "Quitter", "Voulez-vous quitter l'application?",
-                                      QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            QCoreApplication::exit();
-        } else {
-            qDebug() << "Yes was *not* clicked";
-        }
-*/
-
-        QMessageBox msgBox;
-        msgBox.setText("Voulez-vous quitter l'application?");
+        msgBox.setWindowTitle("EWB");
+        msgBox.setText("Quitter l'application?");
         msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
-        //QAbstractButton *myYesButton = msgBox.addButton(QString("Quitter"), QMessageBox::Ok);
-        //QAbstractButton *myNoButton = msgBox.addButton(QString("Abandon"), QMessageBox::NoRole);
+        msgBox.setButtonText(QMessageBox::Ok, "Quitter");
+        msgBox.setButtonText(QMessageBox::Cancel, "Rester");
         msgBox.setIcon(QMessageBox::Warning);
         if( msgBox.exec() == QMessageBox::Ok ) {
             QCoreApplication::exit();
         }
-        else
-        {
+        else {
             UnlockWebView();
         }
+    }
+}
 
+void MainWindow::handleButtonLeft() {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("EWB");
+    msgBox.setText("Revenir à l'accueil?");
+    msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    msgBox.setButtonText(QMessageBox::Ok, "Quitter");
+    msgBox.setButtonText(QMessageBox::Cancel, "Rester");
+    msgBox.setIcon(QMessageBox::Warning);
+    if( msgBox.exec() == QMessageBox::Ok ) {
+        webview->load(QUrl("https://smb33.keosystems.com"));
+        UnlockWebView(); // On passe en VERT si on était en rouge !!!
+    }
+    else {
+        UnlockWebView(); // On passe en VERT si on était en rouge !!!
     }
 }
 
@@ -150,20 +146,20 @@ void MainWindow::finTempo()
     {
         if(bToogleColors==false)
         {
-            PushButton->setText("Appel");
+            PushButtonRight->setText("Appel");
             toolbar->setStyleSheet("QToolBar {background-color: black;}");
             bToogleColors = true;
         }
         else
         {
-            PushButton->setText("Surveillant");
+            PushButtonRight->setText("Surveillant");
             toolbar->setStyleSheet("QToolBar {background-color: red;}");
             bToogleColors = false;
         }
     } else {
         /* Clock */
 
-        PushButton->setText(QDateTime::currentDateTime().toString("hh:mm"));
+        PushButtonRight->setText(QDateTime::currentDateTime().toString("hh:mm"));
     }
 }
 

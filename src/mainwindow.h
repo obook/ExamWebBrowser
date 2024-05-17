@@ -7,6 +7,13 @@
 #include <QTimer>
 #include <QEvent>
 #include <QPushButton>
+#include <QKeyEvent>
+#include <QDateTime>
+#include <QInputDialog>
+#include <QWebEngineProfile>
+#include <QWebEngineCookieStore>
+#include <QMessageBox>
+#include <QWebEnginePage>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,9 +34,11 @@ private:
     Ui::MainWindow *ui;
     QWebEngineView *webview;
     QToolBar* toolbar;
-    QPushButton* PushButton;
+    QPushButton* PushButtonRight;
+    QPushButton* PushButtonLeft;
     void setupToolBar();
-    void handleButton();
+    void handleButtonRight();
+    void handleButtonLeft();
     void UnlockWebView();
     void LockWebView();
     QTimer *monTimer;
