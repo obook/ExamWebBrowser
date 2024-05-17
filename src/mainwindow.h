@@ -15,6 +15,8 @@
 #include <QMessageBox>
 #include <QWebEnginePage>
 
+#include "toolbar.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -33,7 +35,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QWebEngineView *webview;
-    QToolBar* toolbar;
+    ToolBar* toolbar;
     QPushButton* PushButtonRight;
     QPushButton* PushButtonLeft;
     void setupToolBar();
@@ -43,6 +45,7 @@ private:
     void handleButtonLeft();
     void UnlockWebView();
     void LockWebView();
+    QString MainUrl;
     QTimer *monTimer;
     bool bFocusLost;
     bool bToogleColors;
@@ -55,7 +58,8 @@ protected:
 protected:
     void closeEvent(QCloseEvent *event);
 public slots :
-    void finTempo();
-
+    void EndTimer();
+    void slotLabelClicked();
+    void slotToolbarClicked();
 };
 #endif // MAINWINDOW_H
