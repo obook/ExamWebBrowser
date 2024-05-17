@@ -58,6 +58,38 @@ MainWindow::MainWindow(QWidget *parent)
     UnlockWebView();
 
     QObject::connect(monTimer, SIGNAL(timeout()), this,SLOT(finTempo()));
+
+    bFocusLostCounter = 0;
+}
+
+void MainWindow::SetupToolBarStyleFocusOn() {
+    int radius = 1;
+
+    QString styleSheet(QString(
+                           "QToolBar "
+                           "{background-color: rgba(0,204,0,128); "
+                           "border-radius: %1px;} "
+                           "QToolButton "
+                           "{max-width: 48px; "
+                           "max-height: 49px; "
+                           "border: 0px;}").
+                       arg(radius));
+    toolbar->setStyleSheet(styleSheet);
+}
+
+void MainWindow::SetupToolBarStyleFocusOff() {
+    int radius = 1;
+
+    QString styleSheet(QString(
+                           "QToolBar "
+                           "{background-color: rgba(255,0,0,128); "
+                           "border-radius: %1px;} "
+                           "QToolButton "
+                           "{max-width: 48px; "
+                           "max-height: 49px; "
+                           "border: 0px;}").
+                       arg(radius));
+    toolbar->setStyleSheet(styleSheet);
 }
 
 void MainWindow::setupToolBar()
@@ -66,9 +98,12 @@ void MainWindow::setupToolBar()
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
     toolbar->setFixedHeight(48);
-    toolbar->setStyleSheet("QToolBar {background-color: green;}");
+    //toolbar->setStyleSheet("QToolBar {background-color: green;}");
+    //toolbar->setStyleSheet(styleSheet);
+    SetupToolBarStyleFocusOn();
 
     PushButtonLeft = new QPushButton(this);
+    PushButtonLeft->setText("Accueil");
     toolbar->addWidget(PushButtonLeft);
     connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
 
@@ -87,6 +122,7 @@ void MainWindow::setupToolBar()
 }
 
 void MainWindow::handleButtonRight() {
+    bFocusLostCounter--;
     if (bFocusLost==true) {
         bool ok;
         QInputDialog Dialog = new QInputDialog;
@@ -98,6 +134,7 @@ void MainWindow::handleButtonRight() {
             QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
             /* Si la chaine saisie contient le code secret */
             if(text.contains(code_secret)) {
+                bFocusLostCounter=0;
                 UnlockWebView();
             }
         }
@@ -122,21 +159,26 @@ void MainWindow::handleButtonRight() {
 }
 
 void MainWindow::handleButtonLeft() {
+    bFocusLostCounter--;
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Revenir à l'accueil?");
     msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Cancel);
-    msgBox.setButtonText(QMessageBox::Ok, "Quitter");
-    msgBox.setButtonText(QMessageBox::Cancel, "Rester");
+    msgBox.setButtonText(QMessageBox::Ok, "Oui");
+    msgBox.setButtonText(QMessageBox::Cancel, "Non");
     msgBox.setIcon(QMessageBox::Warning);
     if( msgBox.exec() == QMessageBox::Ok ) {
         webview->load(QUrl("https://smb33.keosystems.com"));
-        UnlockWebView(); // On passe en VERT si on était en rouge !!!
+        if(!bFocusLostCounter) {
+            UnlockWebView();
+        }
     }
     else {
-        UnlockWebView(); // On passe en VERT si on était en rouge !!!
+        if(!bFocusLostCounter) {
+            UnlockWebView();
+        }
     }
 }
 
@@ -153,7 +195,8 @@ void MainWindow::finTempo()
         else
         {
             PushButtonRight->setText("Surveillant");
-            toolbar->setStyleSheet("QToolBar {background-color: red;}");
+            //toolbar->setStyleSheet("QToolBar {background-color: red;}");
+            SetupToolBarStyleFocusOff();
             bToogleColors = false;
         }
     } else {
@@ -166,16 +209,20 @@ void MainWindow::finTempo()
 
 void MainWindow::UnlockWebView() {
     bFocusLost = false;
-    toolbar->setStyleSheet("QToolBar {background-color: green;}");
+    //toolbar->setStyleSheet("QToolBar {background-color: green;}");
+    SetupToolBarStyleFocusOn();
     bWebViewHidden = false;
     webview->setVisible(true);
+    PushButtonLeft->setEnabled(true);
 }
 
 void MainWindow::LockWebView() {
     bFocusLost = true;
-    toolbar->setStyleSheet("QToolBar {background-color: red;}");
+    //toolbar->setStyleSheet("QToolBar {background-color: red;}");
+    SetupToolBarStyleFocusOff();
     bWebViewHidden = true;
     webview->setVisible(false);
+    PushButtonLeft->setEnabled(false);
 }
 
 /* Détection de la perte de focus */
@@ -185,8 +232,10 @@ bool MainWindow::event(QEvent *event)
     case QEvent::WindowActivate:
         break;
     case QEvent::WindowDeactivate:
-        toolbar->setStyleSheet("QToolBar {background-color: red;}");
+        //toolbar->setStyleSheet("QToolBar {background-color: red;}");
+        SetupToolBarStyleFocusOff();
         LockWebView();
+        bFocusLostCounter++;
         break;
     default:
         break;

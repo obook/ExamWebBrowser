@@ -37,6 +37,8 @@ private:
     QPushButton* PushButtonRight;
     QPushButton* PushButtonLeft;
     void setupToolBar();
+    void SetupToolBarStyleFocusOn();
+    void SetupToolBarStyleFocusOff();
     void handleButtonRight();
     void handleButtonLeft();
     void UnlockWebView();
@@ -45,6 +47,7 @@ private:
     bool bFocusLost;
     bool bToogleColors;
     bool bWebViewHidden;
+    int bFocusLostCounter;
 
 protected:
     bool event(QEvent *event) override;
