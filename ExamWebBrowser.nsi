@@ -28,7 +28,7 @@ Section "ExamWebBrowser" section_index
 
   # your code here
   SetOutPath $InstDir
-  File /nonfatal /a /r "bin\"
+  File /nonfatal /a /r "bin\Windows\"
 
 SectionEnd
 
