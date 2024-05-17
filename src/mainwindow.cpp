@@ -5,16 +5,9 @@
 
 Todo :
 
-Voir 
-QWebEngineView::loadStarted() // This signal is emitted when a new load of the page is started.
-QWebEngineView::loadProgress(int progress) // This signal is emitted every time an element in the web view completes loading
-void QWebEngineView::loadFinished(bool ok) // This signal is emitted when a load of the page has finished. ok will indicate whether the load was successful or an error occurred.
-
 Voir
 https://blog.csdn.net/CHAMSDONCON/article/details/124403358
 https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class-examples.html
-
-Il est possible de toute refaire avec webenginewidgets et être compatible Windows/Linux
 
 */
 
@@ -60,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(monTimer, SIGNAL(timeout()), this,SLOT(finTempo()));
 
     bFocusLostCounter = 0;
+
+    DialogRun = false;
 }
 
 void MainWindow::SetupToolBarStyleFocusOn() {
@@ -67,7 +62,7 @@ void MainWindow::SetupToolBarStyleFocusOn() {
 
     QString styleSheet(QString(
                            "QToolBar "
-                           "{background-color: rgba(0,204,0,128); "
+                           "{background-color: rgba(0,220,0,128); "
                            "border-radius: %1px;} "
                            "QToolButton "
                            "{max-width: 48px; "
@@ -122,6 +117,7 @@ void MainWindow::setupToolBar()
 }
 
 void MainWindow::handleButtonRight() {
+    DialogRun = true;
     bFocusLostCounter--;
     if (bFocusLost==true) {
         bool ok;
@@ -156,9 +152,12 @@ void MainWindow::handleButtonRight() {
             UnlockWebView();
         }
     }
+
+    DialogRun = false;
 }
 
 void MainWindow::handleButtonLeft() {
+    DialogRun = true;
     bFocusLostCounter--;
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
@@ -180,6 +179,7 @@ void MainWindow::handleButtonLeft() {
             UnlockWebView();
         }
     }
+    DialogRun = false;
 }
 
 void MainWindow::finTempo()
@@ -233,9 +233,11 @@ bool MainWindow::event(QEvent *event)
         break;
     case QEvent::WindowDeactivate:
         //toolbar->setStyleSheet("QToolBar {background-color: red;}");
-        SetupToolBarStyleFocusOff();
-        LockWebView();
-        bFocusLostCounter++;
+        if(!DialogRun) {
+            SetupToolBarStyleFocusOff();
+            LockWebView();
+            bFocusLostCounter++;
+        }
         break;
     default:
         break;

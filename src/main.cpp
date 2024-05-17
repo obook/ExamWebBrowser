@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.setWindowState(Qt::WindowFullScreen);
-    a.setWindowIcon(QIcon("./images/icon.png"));
+    a.setWindowIcon(QIcon("ExamWebBrowser.png")); // Not show on Kde Wayland
     w.show();
     return a.exec();
 }

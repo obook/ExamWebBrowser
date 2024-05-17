@@ -47,6 +47,7 @@ private:
     bool bFocusLost;
     bool bToogleColors;
     bool bWebViewHidden;
+    bool DialogRun;
     int bFocusLostCounter;
 
 protected:
