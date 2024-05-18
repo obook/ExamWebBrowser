@@ -1,5 +1,11 @@
 #include "toolbar.h"
 
+/*
+ * toolbar.h
+ *
+ * */
+
+
 ToolBar::ToolBar(QWidget* parent, Qt::WindowFlags f)
     : QToolBar(parent) {
 
