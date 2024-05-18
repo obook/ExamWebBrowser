@@ -190,10 +190,10 @@ void MainWindow::handleButtonRight() {
         msgBox.setText("Quitter l'application?");
         msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.button(QMessageBox::Ok)->setText("Quitter");
+        msgBox.button(QMessageBox::Cancel)->setText("Rester");
         msgBox.setDefaultButton(QMessageBox::Cancel);
-        msgBox.setButtonText(QMessageBox::Ok, "Quitter");
-        msgBox.setButtonText(QMessageBox::Cancel, "Rester");
-        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setIcon(QMessageBox::Critical);
         if( msgBox.exec() == QMessageBox::Ok ) {
             QCoreApplication::exit();
         }
@@ -212,10 +212,10 @@ void MainWindow::handleButtonLeft() {
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Revenir à l'accueil?");
     msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
-    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.button(QMessageBox::Ok)->setText("Oui");
+    msgBox.button(QMessageBox::Cancel)->setText("Non");
     msgBox.setDefaultButton(QMessageBox::Cancel);
-    msgBox.setButtonText(QMessageBox::Ok, "Oui");
-    msgBox.setButtonText(QMessageBox::Cancel, "Non");
     msgBox.setIcon(QMessageBox::Warning);
     if( msgBox.exec() == QMessageBox::Ok ) {
         webview->load(QUrl(MainUrl));
