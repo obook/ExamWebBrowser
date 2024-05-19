@@ -3,7 +3,7 @@
 
 #include <QSettings>
 #include "clickablelabel.h"
-
+#include <QMouseEvent>
 #include <QLayout>
 
 /*
@@ -67,23 +67,37 @@ MainWindow::MainWindow(QWidget *parent)
 
     UnlockWebView();
 
-    /* Timer */
+    /* Network */
 
-    QObject::connect(monTimer, SIGNAL(timeout()), this,SLOT(EndTimer()));
+    pNetclient = new network_client();
+
+    /* Timers */
+
+    FocusTimer = new QTimer(this);
+    connect(FocusTimer, SIGNAL(timeout()), this,SLOT(EndFocusTimer()));
+    FocusTimer->start(1000);
+    updateToolBar();
+
+    NetworkTimer = new QTimer(this);
+    connect(NetworkTimer, SIGNAL(timeout()), this,SLOT(EndNetworkTimer()));
+    NetworkTimer->start(15000);
+    updateNetwork();
 
     /* Variables */
 
     bFocusLostCounter = 0;
     DialogRun = false;
+
+    installEventFilter(this);
 }
 
 void MainWindow::setupToolBar()
 {
-
     toolbar = (ToolBar*)addToolBar(tr("File"));
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
     toolbar->setFixedHeight(40);
+    toolbar->toggleViewAction()->setEnabled(false); // Disable QToolbar right menu
     SetupToolBarStyleFocusOn();
     connect(toolbar , SIGNAL(clicked()), this, SLOT(slotToolbarClicked()));
 
@@ -98,7 +112,7 @@ void MainWindow::setupToolBar()
     toolbar->addWidget(spacerWidget1);
 
     QLabel *Label = new ClickableLabel(this);
-    Label->setText("   NAVIGATEUR EN MODE EXAMEN   ");
+    Label->setText("   NAVIGATEUR MODE EXAMEN   ");
     Label->setStyleSheet("QLabel { background-color : black; color : white; }");
     toolbar->addWidget(Label);
     connect(Label , SIGNAL(clicked()), this, SLOT(slotLabelClicked()));
@@ -108,17 +122,14 @@ void MainWindow::setupToolBar()
     spacerWidget2->setVisible(true);
     toolbar->addWidget(spacerWidget2);
 
-    PushButtonRight = new QPushButton(this);
+    PushButtonRight = new PushButton(this);
     toolbar->addWidget(PushButtonRight);
     connect(PushButtonRight, &QPushButton::released, this, &MainWindow::handleButtonRight);
-
-    monTimer = new QTimer(this);
-    connect(monTimer, SIGNAL(timeout()), this, SLOT(update()));
-    monTimer->start(1000);
+    PushButtonRight->installEventFilter(this);
 }
 
 void MainWindow::slotToolbarClicked() {
-    qDebug() << "slotToolbarClicked";
+    qDebug() <<  QDateTime::currentMSecsSinceEpoch(), " slotToolbarClicked";
 }
 
 void MainWindow::slotLabelClicked() {
@@ -228,8 +239,12 @@ void MainWindow::handleButtonLeft() {
     DialogRun = false;
 }
 
-void MainWindow::EndTimer()
-{
+void MainWindow::EndFocusTimer() {
+    // qDebug() << "EndFocusTimer";
+    updateToolBar();
+}
+
+void MainWindow::updateToolBar() {
     if (bFocusLost==true) {
         if(bToogleColors==false) {
             PushButtonRight->setText("Appel");
@@ -237,20 +252,26 @@ void MainWindow::EndTimer()
             bToogleColors = true;
         } else {
             PushButtonRight->setText("Surveillant");
-            //toolbar->setStyleSheet("QToolBar {background-color: red;}");
             SetupToolBarStyleFocusOff();
             bToogleColors = false;
         }
     } else {
         /* Clock */
-
         PushButtonRight->setText(QDateTime::currentDateTime().toString("hh:mm"));
     }
 }
 
+void MainWindow::EndNetworkTimer() {
+    //qDebug() << "EndNetworkTimer";
+    updateNetwork();
+}
+
+void MainWindow::updateNetwork() {
+    qDebug() << "updateNetwork";
+}
+
 void MainWindow::UnlockWebView() {
     bFocusLost = false;
-    //toolbar->setStyleSheet("QToolBar {background-color: green;}");
     SetupToolBarStyleFocusOn();
     bWebViewHidden = false;
     webview->setVisible(true);
@@ -259,7 +280,6 @@ void MainWindow::UnlockWebView() {
 
 void MainWindow::LockWebView() {
     bFocusLost = true;
-    //toolbar->setStyleSheet("QToolBar {background-color: red;}");
     SetupToolBarStyleFocusOff();
     bWebViewHidden = true;
     webview->setVisible(false);
@@ -267,24 +287,41 @@ void MainWindow::LockWebView() {
 }
 
 /* Détection de la perte de focus */
-bool MainWindow::event(QEvent *event)
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    switch (event->type()) {
-    case QEvent::WindowActivate:
-        break;
-    case QEvent::WindowDeactivate:
-        //toolbar->setStyleSheet("QToolBar {background-color: red;}");
-        if(!DialogRun) {
-            SetupToolBarStyleFocusOff();
-            LockWebView();
-            bFocusLostCounter++;
+    if (obj == this ){
+        switch (event->type()) {
+        case QEvent::WindowActivate:
+            break;
+        case QEvent::WindowDeactivate:
+            if(!DialogRun) {
+                SetupToolBarStyleFocusOff();
+                LockWebView();
+                bFocusLostCounter++;
+            }
+            break;
+        default:
+            break;
         }
-        break;
-    default:
-        break;
     }
 
-    return QWidget::event(event);
+    /* A terminer ... */
+    else if (obj == PushButtonRight) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        if (mouseEvent->buttons() & Qt::LeftButton && mouseEvent->modifiers() == Qt::ShiftModifier) {
+
+            QDateTime date = QDateTime::currentDateTime();
+            QString formattedTime = date.toString("dd.MM.yyyy hh:mm:ss");
+            QByteArray formattedTimeMsg = formattedTime.toLocal8Bit();
+
+            qDebug() << "Date:"+formattedTime +  "eventFilter PushButtonRight";
+
+            // handleButtonRight();
+
+            return QWidget::eventFilter(obj, event);
+        }
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)

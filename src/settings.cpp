@@ -10,7 +10,7 @@ Settings::Settings(QObject *parent)
 QString Settings::GetUrl() {
     MainUrl = pSettings->value("URL").toString();
     if(MainUrl==""){
-        MainUrl = "https://smb33.keosystems.com";
+        MainUrl = "https://moodle-4.0.7.keosystems.com/html/login/index.php";
         pSettings->setValue("URL", MainUrl);
     }
     return MainUrl;
@@ -25,3 +25,11 @@ QString Settings::GetServerIP() {
     return ServerIP;
 }
 
+QString Settings::GetServerPort() {
+    ServerPort = pSettings->value("ServerPort").toString();
+    if(ServerPort==""){
+        ServerPort = "127.0.01";
+        pSettings->setValue("ServerPort", ServerPort);
+    }
+    return ServerPort;
+}

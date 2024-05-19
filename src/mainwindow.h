@@ -17,6 +17,8 @@
 
 #include "toolbar.h"
 #include "settings.h"
+#include "network_client.h"
+#include "pushbutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -37,22 +39,28 @@ private:
     Ui::MainWindow *ui;
     QWebEngineView *webview;
     ToolBar* toolbar;
-    QPushButton* PushButtonRight;
+    PushButton* PushButtonRight;
     QPushButton* PushButtonLeft;
 
-    QTimer *monTimer;
+    QTimer *FocusTimer;
+    QTimer *NetworkTimer;
 
     Settings *pSettings;
     QString MainUrl;
     QString ServerIp;
+    network_client *pNetclient;
 
     void setupToolBar();
     void SetupToolBarStyleFocusOn();
     void SetupToolBarStyleFocusOff();
+    void updateToolBar();
     void handleButtonRight();
     void handleButtonLeft();
     void UnlockWebView();
     void LockWebView();
+
+    void updateNetwork();
+
     bool bFocusLost;
     bool bToogleColors;
     bool bWebViewHidden;
@@ -60,13 +68,14 @@ private:
     int bFocusLostCounter;
 
 protected:
-    bool event(QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 public slots :
-    void EndTimer();
+    void EndFocusTimer();
+    void EndNetworkTimer();
     void slotLabelClicked();
     void slotToolbarClicked();
 };

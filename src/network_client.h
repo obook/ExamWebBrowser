@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QTcpSocket>
 
 class network_client : public QObject
 {
@@ -10,6 +11,9 @@ class network_client : public QObject
 public:
     explicit network_client(QObject *parent = nullptr);
     void Start(QString IpServer);
+    void Connect(QString ServerIp, int Port);
+private:
+    QTcpSocket *socket;
 signals:
 };
 

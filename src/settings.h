@@ -12,10 +12,12 @@ public:
 public:
     QString GetUrl();
     QString GetServerIP();
+    QString GetServerPort();
 private:
     QSettings *pSettings;
     QString MainUrl;
     QString ServerIP;
+    QString ServerPort;
 };
 
 #endif // SETTINGS_H
