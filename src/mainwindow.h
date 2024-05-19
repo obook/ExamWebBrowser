@@ -16,6 +16,7 @@
 #include <QWebEnginePage>
 
 #include "toolbar.h"
+#include "settings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -38,6 +39,13 @@ private:
     ToolBar* toolbar;
     QPushButton* PushButtonRight;
     QPushButton* PushButtonLeft;
+
+    QTimer *monTimer;
+
+    Settings *pSettings;
+    QString MainUrl;
+    QString ServerIp;
+
     void setupToolBar();
     void SetupToolBarStyleFocusOn();
     void SetupToolBarStyleFocusOff();
@@ -45,8 +53,6 @@ private:
     void handleButtonLeft();
     void UnlockWebView();
     void LockWebView();
-    QString MainUrl;
-    QTimer *monTimer;
     bool bFocusLost;
     bool bToogleColors;
     bool bWebViewHidden;
@@ -55,8 +61,10 @@ private:
 
 protected:
     bool event(QEvent *event) override;
+
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event) override;
+
 public slots :
     void EndTimer();
     void slotLabelClicked();

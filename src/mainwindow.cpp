@@ -33,12 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     setupToolBar();
 
     /* Settings */
-    QSettings settings("ExamWebBrowser.ini",QSettings::IniFormat);
-    MainUrl = settings.value("URL").toString();
-    if(MainUrl==""){
-        MainUrl = "https://smb33.keosystems.com";
-        settings.setValue("URL", MainUrl);
-    }
+
+    Settings *pSettings = new Settings();
+    MainUrl = pSettings->GetUrl();
 
     /* WebEngine */
     webview = new QWebEngineView(this);
@@ -128,7 +125,7 @@ void MainWindow::slotLabelClicked() {
     DialogRun = true;
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
-    msgBox.setText("Navigateur Web en Mode Examen");
+    msgBox.setText("Navigateur Mode Examen");
     msgBox.setInformativeText("(C) obooklage 2024");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.exec();
