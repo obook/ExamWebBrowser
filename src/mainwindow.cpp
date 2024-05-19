@@ -74,12 +74,12 @@ MainWindow::MainWindow(QWidget *parent)
     /* Timers */
 
     FocusTimer = new QTimer(this);
-    connect(FocusTimer, SIGNAL(timeout()), this,SLOT(EndFocusTimer()));
+    connect(FocusTimer, SIGNAL(timeout()), this,SLOT(onFocusTimer()));
     FocusTimer->start(1000);
     updateToolBar();
 
     NetworkTimer = new QTimer(this);
-    connect(NetworkTimer, SIGNAL(timeout()), this,SLOT(EndNetworkTimer()));
+    connect(NetworkTimer, SIGNAL(timeout()), this,SLOT(onNetworkTimer()));
     NetworkTimer->start(15000);
     updateNetwork();
 
@@ -98,8 +98,11 @@ void MainWindow::setupToolBar()
     toolbar->setMovable(false);
     toolbar->setFixedHeight(40);
     toolbar->toggleViewAction()->setEnabled(false); // Disable QToolbar right menu
+    toolbar->setContextMenuPolicy(Qt::NoContextMenu);
+    toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+
     SetupToolBarStyleFocusOn();
-    connect(toolbar , SIGNAL(clicked()), this, SLOT(slotToolbarClicked()));
+    connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
 
     PushButtonLeft = new QPushButton(this);
     PushButtonLeft->setText("Accueil");
@@ -115,31 +118,90 @@ void MainWindow::setupToolBar()
     Label->setText("   NAVIGATEUR MODE EXAMEN   ");
     Label->setStyleSheet("QLabel { background-color : black; color : white; }");
     toolbar->addWidget(Label);
-    connect(Label , SIGNAL(clicked()), this, SLOT(slotLabelClicked()));
+    connect(Label , SIGNAL(clicked()), this, SLOT(onLabelClicked()));
 
     QWidget *spacerWidget2 = new QWidget(this);
     spacerWidget2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget2->setVisible(true);
     toolbar->addWidget(spacerWidget2);
 
-    PushButtonRight = new PushButton(this);
+    PushButtonRight = new QRightClickButton(this);
     toolbar->addWidget(PushButtonRight);
-    connect(PushButtonRight, &QPushButton::released, this, &MainWindow::handleButtonRight);
+    //connect(PushButtonRight, &QPushButton::released, this, &MainWindow::handleButtonRight);
+    connect(PushButtonRight, SIGNAL(rightClicked()), this, SLOT(onButtonRightClicked()));
     PushButtonRight->installEventFilter(this);
 }
 
-void MainWindow::slotToolbarClicked() {
-    qDebug() <<  QDateTime::currentMSecsSinceEpoch(), " slotToolbarClicked";
+void MainWindow::onButtonRightClicked(){
+    qDebug() <<  "onRightButtonRightClicked";
+
+    DialogRun = true;
+    bFocusLostCounter--;
+    if (bFocusLost==true) {
+         CodeInputDialog();
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("EWB");
+        msgBox.setText("Quitter l'application?");
+        msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.button(QMessageBox::Ok)->setText("Quitter");
+        msgBox.button(QMessageBox::Cancel)->setText("Rester");
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        msgBox.setIcon(QMessageBox::Critical);
+        if( msgBox.exec() == QMessageBox::Ok ) {
+            QCoreApplication::exit();
+        }
+        else {
+            UnlockWebView();
+        }
+    }
+
+    DialogRun = false;
+
 }
 
-void MainWindow::slotLabelClicked() {
+void MainWindow::CodeInputDialog() {
+    qDebug() <<  "onRightButtonRightClicked";
+
     DialogRun = true;
+    bFocusLostCounter--;
+
+    bool ok;
+    QInputDialog Dialog = new QInputDialog;
+    Dialog.setWindowTitle("EWB");
+    Dialog.setCancelButtonText(QString("Abandon"));
+    Dialog.setOkButtonText(QString("Valider"));
+    QString text = Dialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
+    if ( ok && !text.isEmpty() ) {
+        QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
+        /* Si la chaine saisie contient le code secret */
+        if(text.contains(code_secret)) {
+            bFocusLostCounter=0;
+            UnlockWebView();
+        }
+    }
+
+    DialogRun = false;
+}
+
+void MainWindow::onToolbarClicked() {
+    qDebug() <<  QDateTime::currentMSecsSinceEpoch(), " onToolbarClicked";
+
+}
+
+void MainWindow::onLabelClicked() {
+    DialogRun = true;
+    bFocusLostCounter--;
+
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Navigateur Mode Examen");
     msgBox.setInformativeText("(C) obooklage 2024");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.exec();
+
     DialogRun = false;
 }
 
@@ -173,46 +235,7 @@ void MainWindow::SetupToolBarStyleFocusOff() {
     toolbar->setStyleSheet(styleSheet);
 }
 
-void MainWindow::handleButtonRight() {
-    DialogRun = true;
-    bFocusLostCounter--;
-    if (bFocusLost==true) {
-        bool ok;
-        QInputDialog Dialog = new QInputDialog;
-        Dialog.setWindowTitle("EWB");
-        Dialog.setCancelButtonText(QString("Abandon"));
-        Dialog.setOkButtonText(QString("Valider"));
-        QString text = Dialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
-        if ( ok && !text.isEmpty() ) {
-            QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
-            /* Si la chaine saisie contient le code secret */
-            if(text.contains(code_secret)) {
-                bFocusLostCounter=0;
-                UnlockWebView();
-            }
-        }
-    }
-    else {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("EWB");
-        msgBox.setText("Quitter l'application?");
-        msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.button(QMessageBox::Ok)->setText("Quitter");
-        msgBox.button(QMessageBox::Cancel)->setText("Rester");
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-        msgBox.setIcon(QMessageBox::Critical);
-        if( msgBox.exec() == QMessageBox::Ok ) {
-            QCoreApplication::exit();
-        }
-        else {
-            UnlockWebView();
-        }
-    }
-
-    DialogRun = false;
-}
-
+/* Go to home */
 void MainWindow::handleButtonLeft() {
     DialogRun = true;
     bFocusLostCounter--;
@@ -239,7 +262,7 @@ void MainWindow::handleButtonLeft() {
     DialogRun = false;
 }
 
-void MainWindow::EndFocusTimer() {
+void MainWindow::onFocusTimer() {
     // qDebug() << "EndFocusTimer";
     updateToolBar();
 }
@@ -261,7 +284,7 @@ void MainWindow::updateToolBar() {
     }
 }
 
-void MainWindow::EndNetworkTimer() {
+void MainWindow::onNetworkTimer() {
     //qDebug() << "EndNetworkTimer";
     updateNetwork();
 }
@@ -298,6 +321,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 SetupToolBarStyleFocusOff();
                 LockWebView();
                 bFocusLostCounter++;
+                CodeInputDialog();
             }
             break;
         default:
@@ -305,7 +329,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    /* A terminer ... */
+    /* A terminer ...
     else if (obj == PushButtonRight) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->buttons() & Qt::LeftButton && mouseEvent->modifiers() == Qt::ShiftModifier) {
@@ -314,13 +338,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             QString formattedTime = date.toString("dd.MM.yyyy hh:mm:ss");
             QByteArray formattedTimeMsg = formattedTime.toLocal8Bit();
 
-            qDebug() << "Date:"+formattedTime +  "eventFilter PushButtonRight";
+            //qDebug() << "Date:"+formattedTime +  "eventFilter PushButtonRight";
 
-            // handleButtonRight();
+            // handleButtonRight(); Loop
 
             return QWidget::eventFilter(obj, event);
         }
-    }
+    } */
     return QWidget::eventFilter(obj, event);
 }
 

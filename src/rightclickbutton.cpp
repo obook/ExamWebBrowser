@@ -1,8 +1,23 @@
-#include "pushbutton.h"
+#include "rightclickbutton.h"
 #include <QMouseEvent>
 
-PushButton::PushButton(QWidget* parent, Qt::WindowFlags f)
-    : QPushButton(parent) {
+QRightClickButton::QRightClickButton(QWidget *parent) :
+    QPushButton(parent)
+{
+}
+
+void QRightClickButton::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button()==Qt::RightButton)
+    {
+        // OK qDebug() << "QRightClickButton mousePressEvent!";
+        emit rightClicked();
+    }
+    QPushButton::mousePressEvent(event);
+}
+
+QRightClickButton::~QRightClickButton() {
+
 }
 
 /*
@@ -17,7 +32,7 @@ bool PushButton::mousePressEvent(QObject *obj, QEvent *event)
     }
     return QWidget::eventFilter(obj, event);
 }
-*/
+
 
 void PushButton::mousePressEvent(QMouseEvent *e)
 {
@@ -28,6 +43,5 @@ void PushButton::mousePressEvent(QMouseEvent *e)
     QPushButton::mousePressEvent(e);
 }
 
-PushButton::~PushButton() {
 
-}
+*/
