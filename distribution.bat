@@ -6,7 +6,7 @@ xcopy /Y .\media\home.svg .\bin\Windows\images
 REM del .\bin\Windows\ExamWebBrowser.ini
 X:\Qt\6.7.0\msvc2019_64\bin\windeployqt .\bin\Windows\ExamWebBrowser.exe
 cd bin
-tar.exe -a -cf X:\ExamWebBrowser\ExamWebBrowser_Win.zip Windows
+tar.exe -a -cf X:\ExamWebBrowser\distribution\ExamWebBrowser_Win.zip Windows
 cd ..
 "X:\Program Files (x86)\NSIS\makensis.exe" ExamWebBrowser.nsi
 pause

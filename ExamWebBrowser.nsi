@@ -4,7 +4,7 @@ Unicode true
 
 ; Settings ---------------------------------
 Name "SMB33 ExamWebBrowser"
-OutFile "ExamWebBrowserInstaller.exe"
+OutFile "distribution\ExamWebBrowserInstaller.exe"
 RequestExecutionLevel user
 InstallDir "$PROGRAMFILES\ExamWebBrowser"
 Page Directory
