@@ -277,7 +277,7 @@ void MainWindow::updateToolBar() {
     if (bFocusLost==true) {
         if(bToogleColors==false) {
             PushButtonRight->setText("Appel");
-            toolbar->setStyleSheet("QToolBar {background-color: black;}");
+            toolbar->setStyleSheet("QToolBar {background-color: yellow;}");
             bToogleColors = true;
         } else {
             PushButtonRight->setText("Surveillant");
