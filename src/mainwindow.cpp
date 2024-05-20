@@ -105,7 +105,12 @@ void MainWindow::setupToolBar()
     connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
 
     PushButtonLeft = new QPushButton(this);
-    PushButtonLeft->setText("Accueil");
+    QPixmap pixmap("images/home.svg");
+    QIcon ButtonIcon(pixmap);
+    PushButtonLeft->setIcon(ButtonIcon);
+    //PushButtonLeft->setStyleSheet("QPushButton { border-image: url(:/images/home.svg); }");
+    //PushButtonLeft->setAttribute(Qt::WA_TranslucentBackground);
+    //PushButtonLeft->setStyleSheet("QPushButton{background: transparent;}");
     toolbar->addWidget(PushButtonLeft);
     connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
 
@@ -113,7 +118,7 @@ void MainWindow::setupToolBar()
     spacerWidget1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget1->setVisible(true);
     toolbar->addWidget(spacerWidget1);
-
+/* Titre de la fenetre retiré
     QLabel *Label = new ClickableLabel(this);
     Label->setText("   NAVIGATEUR MODE EXAMEN   ");
     Label->setStyleSheet("QLabel { background-color : black; color : white; }");
@@ -124,10 +129,11 @@ void MainWindow::setupToolBar()
     spacerWidget2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget2->setVisible(true);
     toolbar->addWidget(spacerWidget2);
-
+*/
     PushButtonRight = new QRightClickButton(this);
+    PushButtonRight->setFlat(true);
+    PushButtonRight->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
     toolbar->addWidget(PushButtonRight);
-    //connect(PushButtonRight, &QPushButton::released, this, &MainWindow::handleButtonRight);
     connect(PushButtonRight, SIGNAL(rightClicked()), this, SLOT(onButtonRightClicked()));
     PushButtonRight->installEventFilter(this);
 }
@@ -225,7 +231,7 @@ void MainWindow::SetupToolBarStyleFocusOff() {
 
     QString styleSheet(QString(
                            "QToolBar "
-                           "{background-color: rgba(255,0,0,128); "
+                           "{background-color: rgba(255,50,50,128); "
                            "border-radius: %1px;} "
                            "QToolButton "
                            "{max-width: 48px; "
