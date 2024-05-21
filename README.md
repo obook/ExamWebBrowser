@@ -11,7 +11,7 @@ Fonctionnalités ultra simplifiées :
 * pas de téléchargement de documents
 * contrôle de perte de focus avec bouton d'appel du surveillant.
 
-La sortie du programme et l'entrée du code de déverouillage se sont par un clic droit sur l'horloge.
+La sortie du programme et l'entrée du code de déverrouillage se sont par un clic droit sur l'horloge.
 
 Vous pouvez configurer le logiciel en éditant le fichier ExamWebBrowser.ini créé au premier lancement.
 
