@@ -10,7 +10,7 @@ InstallDir "$PROGRAMFILES\ExamWebBrowser"
 Page Directory
 Page InstFiles
 
-!define MUI_ICON "media/logo-128x128.ico"
+!define MUI_ICON "./images/logo-128x128.ico"
 
 ; Pages ------------------------------------
 ;!insertmacro MUI_PAGE_COMPONENTS 

@@ -1,5 +1,5 @@
 <p align="center">
-    <a href='https://www.smb33.fr/' target='_blank'><img src="./media/logo.svg"  width="120"></a>
+    <a href='https://www.smb33.fr/' target='_blank'><img src="./images/logo.svg"  width="120"></a>
 </p>
 
 Navigateur Web avec mode examen pour l'Ensemble Scolaire Sainte-Marie Bastide à Bordeaux.
@@ -16,5 +16,5 @@ La sortie du programme et l'entrée du code de déverouillage se sont par un cli
 Vous pouvez configurer le logiciel en éditant le fichier ExamWebBrowser.ini créé au premier lancement.
 
 <p align="center">
-    <a href='https://www.smb33.fr/' target='_blank'><img src="./media/ScreenShot.png"  width="640"></a>
+    <a href='https://www.smb33.fr/' target='_blank'><img src="./images/ScreenShot.png"  width="640"></a>
 </p>
