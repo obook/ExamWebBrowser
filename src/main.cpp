@@ -7,6 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon("images/ExamWebBrowser.png")); // Not show on Kde Wayland
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -19,7 +20,6 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.setWindowState(Qt::WindowFullScreen);
-    a.setWindowIcon(QIcon("ExamWebBrowser.png")); // Not show on Kde Wayland
     w.show();
     return a.exec();
 }

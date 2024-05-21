@@ -45,10 +45,8 @@ private:
     QTimer *FocusTimer;
     QTimer *NetworkTimer;
 
-    Settings *pSettings;
-    QString MainUrl;
-    QString ServerIp;
-    network_client *pNetclient;
+    Settings pSettings; /* static */
+    network_client pNetclient; /* static */
 
     void CodeInputDialog();
 

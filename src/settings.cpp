@@ -3,6 +3,7 @@
 Settings::Settings(QObject *parent)
     : QObject{parent}
 {
+    qDebug() << "Settings::Settings";
     /* Settings */
     pSettings = new QSettings("ExamWebBrowser.ini",QSettings::IniFormat);
 }
@@ -33,3 +34,13 @@ QString Settings::GetServerPort() {
     }
     return ServerPort;
 }
+
+QString Settings::GetAppName() {
+    AppName = pSettings->value("AppName").toString();
+    if(AppName==""){
+        AppName = "   SAINTE-MARIE BASTIDE  ";
+        pSettings->setValue("AppName", AppName);
+    }
+    return AppName;
+}
+

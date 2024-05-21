@@ -29,20 +29,14 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("ExamWebBrowser");
 
     /* Toobar */
-
     setupToolBar();
-
-    /* Settings */
-
-    Settings *pSettings = new Settings();
-    MainUrl = pSettings->GetUrl();
 
     /* WebEngine */
     webview = new QWebEngineView(this);
     webview->setContextMenuPolicy(Qt::NoContextMenu);
 
     QWebEngineProfile *engineProfile = webview->page()->profile();
-    // engineProfile->clearHttpCache(); // Load blocked
+    // engineProfile->clearHttpCache(); // Load = blocked
     engineProfile->clearAllVisitedLinks();
     engineProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
     engineProfile->setHttpCacheType(QWebEngineProfile::NoCache);
@@ -61,15 +55,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(webview);
 
-    webview->setUrl(QUrl(MainUrl));
-    //webview->load(QUrl(MainUrl));
+    webview->setUrl(QUrl(pSettings.GetUrl()));
+    //webview->load(QUrl(pSettings.GetUrl()));
     //webview->reload();
 
     UnlockWebView();
 
     /* Network */
 
-    pNetclient = new network_client();
+    // pNetclient = new network_client();
 
     /* Timers */
 
@@ -93,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupToolBar()
 {
-    toolbar = (ToolBar*)addToolBar(tr("File"));
+    toolbar = (ToolBar*)addToolBar(tr(""));
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
     toolbar->setFixedHeight(40);
@@ -104,24 +98,31 @@ void MainWindow::setupToolBar()
     SetupToolBarStyleFocusOn();
     connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
 
+    /* Left home button */
+
     PushButtonLeft = new QPushButton(this);
     QPixmap pixmap("images/home.svg");
     QIcon ButtonIcon(pixmap);
     PushButtonLeft->setIcon(ButtonIcon);
-    //PushButtonLeft->setStyleSheet("QPushButton { border-image: url(:/images/home.svg); }");
-    //PushButtonLeft->setAttribute(Qt::WA_TranslucentBackground);
-    //PushButtonLeft->setStyleSheet("QPushButton{background: transparent;}");
     toolbar->addWidget(PushButtonLeft);
     connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
+
+    /* Separator */
 
     QWidget *spacerWidget1 = new QWidget(this);
     spacerWidget1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget1->setVisible(true);
     toolbar->addWidget(spacerWidget1);
-/* Titre de la fenetre retiré
+
+    /* Toolbar title */
+
     QLabel *Label = new ClickableLabel(this);
-    Label->setText("   NAVIGATEUR MODE EXAMEN   ");
-    Label->setStyleSheet("QLabel { background-color : black; color : white; }");
+
+    QString MainUrl = pSettings.GetUrl();
+
+    Label->setText(pSettings.GetAppName());
+    // Label->setStyleSheet("QLabel { background-color : black; color : white; }");
+    Label->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
     toolbar->addWidget(Label);
     connect(Label , SIGNAL(clicked()), this, SLOT(onLabelClicked()));
 
@@ -129,7 +130,9 @@ void MainWindow::setupToolBar()
     spacerWidget2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget2->setVisible(true);
     toolbar->addWidget(spacerWidget2);
-*/
+
+    /* Right clock button */
+
     PushButtonRight = new QRightClickButton(this);
     PushButtonRight->setFlat(true);
     PushButtonRight->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
@@ -175,11 +178,27 @@ void MainWindow::CodeInputDialog() {
     bFocusLostCounter--;
 
     bool ok;
-    QInputDialog Dialog = new QInputDialog;
-    Dialog.setWindowTitle("EWB");
-    Dialog.setCancelButtonText(QString("Abandon"));
-    Dialog.setOkButtonText(QString("Valider"));
-    QString text = Dialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
+    QInputDialog InputDialog = new QInputDialog;
+    InputDialog.setWindowTitle("EWB");
+    /*
+    InputDialog.setCancelButtonText(QString("Abandon"));
+    InputDialog.setOkButtonText(QString("Valider"));
+
+    //InputDialog.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    InputDialog.setLabelText();
+    InputDialog.button(QMessageBox::Ok)->setText("Quitter");
+    InputDialog.button(QMessageBox::Cancel)->setText("Rester");
+
+    InputDialog.setDefaultButton(QMessageBox::Ok);
+
+    InputDialog.setOkButtonText("Valider");
+    InputDialog.setCancelButtonText("Abandon");
+*/
+
+    InputDialog.setCancelButtonText(QString("Abandon")); // Do not work
+    InputDialog.setOkButtonText(QString("Valider")); // Do not work
+
+    QString text = InputDialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
     if ( ok && !text.isEmpty() ) {
         QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
         /* Si la chaine saisie contient le code secret */
@@ -255,7 +274,7 @@ void MainWindow::handleButtonLeft() {
     msgBox.setDefaultButton(QMessageBox::Cancel);
     msgBox.setIcon(QMessageBox::Warning);
     if( msgBox.exec() == QMessageBox::Ok ) {
-        webview->load(QUrl(MainUrl));
+        webview->load(QUrl(pSettings.GetUrl()));
         if(!bFocusLostCounter) {
             UnlockWebView();
         }

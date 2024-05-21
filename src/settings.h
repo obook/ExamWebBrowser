@@ -13,11 +13,13 @@ public:
     QString GetUrl();
     QString GetServerIP();
     QString GetServerPort();
+    QString GetAppName();
 private:
     QSettings *pSettings;
     QString MainUrl;
     QString ServerIP;
     QString ServerPort;
+    QString AppName;
 };
 
 #endif // SETTINGS_H
