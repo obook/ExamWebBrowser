@@ -133,47 +133,30 @@ void MainWindow::setupToolBar()
 
     /* Right clock button */
 
-    PushButtonRight = new QRightClickButton(this);
+    PushButtonRight = new ClickableButton(this);
     PushButtonRight->setFlat(true);
     PushButtonRight->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
     toolbar->addWidget(PushButtonRight);
     connect(PushButtonRight, SIGNAL(rightClicked()), this, SLOT(onButtonRightClicked()));
+    connect(PushButtonRight, SIGNAL(leftClicked()), this, SLOT(onButtonLeftClicked()));
     PushButtonRight->installEventFilter(this);
 }
 
 void MainWindow::onButtonRightClicked(){
-    qDebug() <<  "onRightButtonRightClicked";
 
-    DialogRun = true;
-    bFocusLostCounter--;
+    if (!bFocusLost) {
+        ExitDialog();
+    }
+}
+
+void MainWindow::onButtonLeftClicked(){
+
     if (bFocusLost==true) {
-         CodeInputDialog();
+        CodeInputDialog();
     }
-    else {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("EWB");
-        msgBox.setText("Quitter l'application?");
-        msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.button(QMessageBox::Ok)->setText("Quitter");
-        msgBox.button(QMessageBox::Cancel)->setText("Rester");
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-        msgBox.setIcon(QMessageBox::Critical);
-        if( msgBox.exec() == QMessageBox::Ok ) {
-            QCoreApplication::exit();
-        }
-        else {
-            UnlockWebView();
-        }
-    }
-
-    DialogRun = false;
-
 }
 
 void MainWindow::CodeInputDialog() {
-    qDebug() <<  "onRightButtonRightClicked";
-
     DialogRun = true;
     bFocusLostCounter--;
 
@@ -198,7 +181,7 @@ void MainWindow::CodeInputDialog() {
     InputDialog.setCancelButtonText(QString("Abandon")); // Do not work
     InputDialog.setOkButtonText(QString("Valider")); // Do not work
 
-    QString text = InputDialog.getText(this, "EWB", "Code de déverouillage:", QLineEdit::Password, "", &ok);
+    QString text = InputDialog.getText(this, "EWB", "Code de déverrouillage:", QLineEdit::Password, "", &ok);
     if ( ok && !text.isEmpty() ) {
         QString code_secret = QDateTime::currentDateTime().toString("ddMM"); /* Eg 1605 pour le 16 mai */
         /* Si la chaine saisie contient le code secret */
@@ -211,9 +194,30 @@ void MainWindow::CodeInputDialog() {
     DialogRun = false;
 }
 
-void MainWindow::onToolbarClicked() {
-    qDebug() <<  QDateTime::currentMSecsSinceEpoch(), " onToolbarClicked";
+void MainWindow::ExitDialog() {
+    DialogRun = true;
+    bFocusLostCounter--;
 
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("EWB");
+    msgBox.setText("Quitter l'application?");
+    msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.button(QMessageBox::Ok)->setText("Quitter");
+    msgBox.button(QMessageBox::Cancel)->setText("Rester");
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    msgBox.setIcon(QMessageBox::Critical);
+    if( msgBox.exec() == QMessageBox::Ok ) {
+        QCoreApplication::exit();
+    }
+    else {
+        UnlockWebView();
+    }
+    DialogRun = false;
+}
+
+void MainWindow::onToolbarClicked() {
+    //qDebug() <<  QDateTime::currentMSecsSinceEpoch(), " onToolbarClicked";
 }
 
 void MainWindow::onLabelClicked() {
@@ -295,11 +299,11 @@ void MainWindow::onFocusTimer() {
 void MainWindow::updateToolBar() {
     if (bFocusLost==true) {
         if(bToogleColors==false) {
-            PushButtonRight->setText("Appel");
+            PushButtonRight->setText("APPEL");
             toolbar->setStyleSheet("QToolBar {background-color: yellow;}");
             bToogleColors = true;
         } else {
-            PushButtonRight->setText("Surveillant");
+            PushButtonRight->setText("SURVEILLANT");
             SetupToolBarStyleFocusOff();
             bToogleColors = false;
         }
@@ -346,7 +350,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 SetupToolBarStyleFocusOff();
                 LockWebView();
                 bFocusLostCounter++;
-                CodeInputDialog();
+                // CodeInputDialog();
             }
             break;
         default:

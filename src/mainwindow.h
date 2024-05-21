@@ -18,7 +18,7 @@
 #include "toolbar.h"
 #include "settings.h"
 #include "network_client.h"
-#include "rightclickbutton.h"
+#include "clickablebutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -39,7 +39,7 @@ private:
     Ui::MainWindow *ui;
     QWebEngineView *webview;
     ToolBar* toolbar;
-    QRightClickButton* PushButtonRight;
+    ClickableButton* PushButtonRight;
     QPushButton* PushButtonLeft;
 
     QTimer *FocusTimer;
@@ -49,6 +49,7 @@ private:
     network_client pNetclient; /* static */
 
     void CodeInputDialog();
+    void ExitDialog();
 
     void setupToolBar();
     void SetupToolBarStyleFocusOn();
@@ -78,5 +79,7 @@ public slots :
     void onToolbarClicked();
     void onLabelClicked();
     void onButtonRightClicked();
+    void onButtonLeftClicked();
 };
+
 #endif // MAINWINDOW_H

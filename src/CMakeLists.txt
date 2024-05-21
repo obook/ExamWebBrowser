@@ -38,7 +38,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         clickablelabel.h clickablelabel.cpp
         network_client.h network_client.cpp
         settings.h settings.cpp
-        rightclickbutton.h rightclickbutton.cpp
+        clickablebutton.h clickablebutton.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET ExamWebBrowser APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
