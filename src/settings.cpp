@@ -38,7 +38,7 @@ QString Settings::GetServerPort() {
 QString Settings::GetAppName() {
     AppName = pSettings->value("AppName").toString();
     if(AppName==""){
-        AppName = "   SAINTE-MARIE BASTIDE  ";
+        AppName = "SAINTE-MARIE BASTIDE";
         pSettings->setValue("AppName", AppName);
     }
     return AppName;
