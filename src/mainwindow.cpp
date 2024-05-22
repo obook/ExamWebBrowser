@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     webview = new QWebEngineView(this);
     webview->setContextMenuPolicy(Qt::NoContextMenu);
 
+    qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
+
     QWebEngineProfile *engineProfile = webview->page()->profile();
     // engineProfile->clearHttpCache(); // Load = blocked
     engineProfile->clearAllVisitedLinks();
@@ -46,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     pCookie->deleteSessionCookies();
 
     connect(webview, &QWebEngineView::loadStarted, [] {
-        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QApplication::setOverrideCursor(Qt::BusyCursor);
     });
 
     connect(webview, &QWebEngineView::loadFinished, [] {
