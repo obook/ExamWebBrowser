@@ -23,10 +23,7 @@ https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class
 
 */
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     setWindowTitle("ExamWebBrowser");
 
@@ -62,10 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     page = new QWebEnginePage(profile, webview);
     webview->setPage(page);
 
-    /* User agent */
+    /* User agent
     profile->setHttpUserAgent(webview->page()->profile()->httpUserAgent()+" SEB/3.7.1 (NewGeneration)");
     qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
-
+    */
     /* Put webview in Main Window */
     setCentralWidget(webview);
 
@@ -110,7 +107,7 @@ void MainWindow::setupToolBar()
     toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
 
     SetupToolBarStyleFocusOn();
-    connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
+    // not used : connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
 
     /* Left home button */
 
@@ -333,7 +330,7 @@ void MainWindow::onNetworkTimer() {
 }
 
 void MainWindow::updateNetwork() {
-    qDebug() << "updateNetwork";
+    // qDebug() << "updateNetwork";
 }
 
 void MainWindow::UnlockWebView() {
