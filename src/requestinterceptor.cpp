@@ -21,19 +21,10 @@ https://sourceforge.net/p/seb/discussion/844844/thread/74d5abe02e/
 
 */
 
-void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo & info)
+void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 {
 
-    /*
-    // Optionally redirect the request URL but it only works for requests
-    // without payload data such as GET ones
-    info.redirect(QUrl("https://www.google.com"));
-
-    // Set HTTP header
-    QByteArray httpHeaderName = "SomeHeaderName";
-    QByteArray httpHeaderValue = "SomeHeaderValue";
-    info.setHttpHeader(httpHeaderName, httpHeaderValue);
-*/
+    /* Try to be SEB compatible
 
     // config key CK
     QByteArray httpHeaderConfigName = "X-SafeExamBrowser-ConfigKeyHash";
@@ -45,13 +36,15 @@ void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo & info)
     QByteArray httpHeaderRequestValue = "bc7c5c84c9500f00a696c94fcfd0df2288c59ef5025d409e5676459bfbdeeee1";
     info.setHttpHeader(httpHeaderRequestName, httpHeaderRequestValue);
 
-    // Intercepting the requested URL
+    */
+
+    /* Intercepting the requested URL : Stay in same FQD */
     QString RequestHost = info.requestUrl().host();
     QString SettingsHost = (QUrl(pSettings.GetUrl())).host();
 
     if( RequestHost != SettingsHost)
     {
-        qDebug() << "! HOST HORS FQD REDIRIGÉ : " << RequestHost;
-        info.redirect(QUrl(pSettings.GetUrl()));
+        qDebug() << "/!\\ HÔTE HORS DOMAINE BLOQUÉ : " << RequestHost;
+        info.block(true);
     }
 }

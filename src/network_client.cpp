@@ -5,7 +5,7 @@
 network_client::network_client(QObject *parent)
     : QObject{parent}
 {
-    qDebug() << "network_client:network_client";
+    /* qDebug() << "network_client:network_client"; */
 }
 
 void network_client::Start(QString IpServer) {

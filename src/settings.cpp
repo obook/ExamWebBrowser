@@ -3,8 +3,6 @@
 Settings::Settings(QObject *parent)
     : QObject{parent}
 {
-    qDebug() << "Settings::Settings";
-    /* Settings */
     pSettings = new QSettings("ExamWebBrowser.ini",QSettings::IniFormat);
 }
 
