@@ -5,6 +5,8 @@
 #include "clickablelabel.h"
 #include <QMouseEvent>
 #include <QLayout>
+#include <QWebEngineProfile>
+#include <QWebEngineUrlRequestInterceptor>
 
 /*
  * mainwindows.cpp
@@ -35,8 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
     webview = new QWebEngineView(this);
     webview->setContextMenuPolicy(Qt::NoContextMenu);
 
-    qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
-
     QWebEngineProfile *engineProfile = webview->page()->profile();
     // engineProfile->clearHttpCache(); // Load = blocked
     engineProfile->clearAllVisitedLinks();
@@ -55,6 +55,18 @@ MainWindow::MainWindow(QWidget *parent)
         QApplication::restoreOverrideCursor();
     });
 
+    /* Interceptor */
+    interceptor = new RequestInterceptor(webview);
+    profile = new QWebEngineProfile(webview);
+    profile->setUrlRequestInterceptor(interceptor);
+    page = new QWebEnginePage(profile, webview);
+    webview->setPage(page);
+
+    /* User agent */
+    profile->setHttpUserAgent(webview->page()->profile()->httpUserAgent()+" SEB/3.7.1 (NewGeneration)");
+    qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
+
+    /* Put webview in Main Window */
     setCentralWidget(webview);
 
     webview->setUrl(QUrl(pSettings.GetUrl()));
@@ -386,5 +398,7 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 MainWindow::~MainWindow()
 {
+    page->deleteLater(); // no effect
+    profile->deleteLater(); // no effect
     delete ui;
 }

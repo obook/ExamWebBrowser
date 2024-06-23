@@ -19,6 +19,7 @@
 #include "settings.h"
 #include "network_client.h"
 #include "clickablebutton.h"
+#include "requestinterceptor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -66,6 +67,9 @@ private:
     bool bWebViewHidden;
     bool DialogRun;
     int bFocusLostCounter;
+    QWebEnginePage * page;
+    RequestInterceptor *interceptor;
+    QWebEngineProfile * profile;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
