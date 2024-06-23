@@ -21,8 +21,7 @@ https://sourceforge.net/p/seb/discussion/844844/thread/74d5abe02e/
 
 */
 
-void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
-{
+void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info) {
 
     /* Try to be SEB compatible
 
@@ -38,13 +37,15 @@ void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 
     */
 
-    /* Intercepting the requested URL : Stay in same FQD */
+    /* Intercepting the requested URL : Stay in same FQD
+     * but accept mathjax cdn, as https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?delayStartupUntil=configured
+    */
+
     QString RequestHost = info.requestUrl().host();
     QString SettingsHost = (QUrl(pSettings.GetUrl())).host();
 
-    if( RequestHost != SettingsHost)
-    {
-        qDebug() << "/!\\ HÔTE" << RequestHost << "HORS DOMAINE BLOQUÉ (" << info.requestUrl() << ")";
+    if( RequestHost != SettingsHost && !info.requestUrl().toString().contains("mathjax",Qt::CaseInsensitive) ) {
+        qDebug() << "/!\\ HÔTE" << RequestHost << "HORS DOMAINE BLOQUÉ (" << info.requestUrl().toString() << ")";
         info.block(true);
     }
 }
