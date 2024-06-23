@@ -395,7 +395,7 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 MainWindow::~MainWindow()
 {
-    page->deleteLater(); // no effect
-    profile->deleteLater(); // no effect
+    delete page;
+    delete profile;
     delete ui;
 }

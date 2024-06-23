@@ -44,7 +44,7 @@ void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 
     if( RequestHost != SettingsHost)
     {
-        qDebug() << "/!\\ HÔTE HORS DOMAINE BLOQUÉ : " << RequestHost;
+        qDebug() << "/!\\ HÔTE" << RequestHost << "HORS DOMAINE BLOQUÉ (" << info.requestUrl() << ")";
         info.block(true);
     }
 }
