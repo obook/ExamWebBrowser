@@ -65,7 +65,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     */
 
 
-    /* Blocked Text (Label) */
+    /* Blocked Text (Label)
+     * See QStackedWidget for implementation
+     * https://stackoverflow.com/questions/2840009/problem-with-qmainwindow-setcentralwidget-and-stackedwidget
+
     TextBlockedlabel = new QLabel(this);
     TextBlockedlabel->setAlignment( Qt::AlignCenter );
     QFont font( "Arial", 24, QFont::Bold);
@@ -73,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     TextBlockedlabel->setText(QString("MERCI D'APPELER UN SURVEILLANT"));
     setCentralWidget(TextBlockedlabel);
     TextBlockedlabel->setVisible(false);
+    */
 
     /* Put webview in Main Window */
     setCentralWidget(webview);
