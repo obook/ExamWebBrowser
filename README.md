@@ -8,7 +8,7 @@ Il est utilisé avec le module de QCM en ligne Moodle (activité *test*) en sall
 Fonctionnalités principales :
 
 * Une seule fenêtre, aucun réglage possible
-* Détection de la perte de focus : l'application se bloque et nécessite l'appel du surveillant pour la débloquer.
+* Détection de la perte de focus : le navigateur web se bloque et nécessite l'appel du surveillant pour la débloquer.
 * URL pré-configurée, aucune sortie du domaine n'est autorisée
 * Icone pour revenir à l'URL d'accueil
 * Horloge permanente
@@ -20,7 +20,7 @@ Autonome (*standalone*), il ne nécessite aucune installation. Il peut être pla
 
 La sortie du programme et l'entrée du code de déverrouillage se font respectivement par un clic droit et clic gauche sur l'horloge.
 
-Vous pouvez configurer le logiciel en éditant le fichier ExamWebBrowser.ini créé au premier lancement.
+Vous pouvez configurer le navigateur en éditant le fichier ExamWebBrowser.ini créé au premier lancement.
 
 <p align="center">
     <a href='https://www.smb33.fr/' target='_blank'><img src="./images/ScreenShot.gif"  width="700"></a>
