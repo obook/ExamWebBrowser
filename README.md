@@ -8,7 +8,7 @@ Il est utilisé avec le module de QCM en ligne Moodle (activité *test*) en sall
 Fonctionnalités principales :
 
 * Une seule fenêtre, aucun réglage possible
-* Détection de la perte de focus : le navigateur web se bloque et nécessite l'appel du surveillant pour la débloquer.
+* Détection de la perte de focus : le navigateur web se bloque et nécessite l'appel du surveillant pour le débloquer.
 * URL pré-configurée, aucune sortie du domaine n'est autorisée
 * Icone pour revenir à l'URL d'accueil
 * Horloge permanente
