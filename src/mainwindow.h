@@ -67,6 +67,7 @@ private:
     bool bWebViewHidden;
     bool DialogRun;
     int bFocusLostCounter;
+    QLabel *TextBlockedlabel;
     QWebEnginePage * page;
     RequestInterceptor *interceptor;
     QWebEngineProfile * profile;

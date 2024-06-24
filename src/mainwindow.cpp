@@ -63,6 +63,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     profile->setHttpUserAgent(webview->page()->profile()->httpUserAgent()+" SEB/3.7.1 (NewGeneration)");
     qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
     */
+
+
+    /* Blocked Text (Label) */
+    TextBlockedlabel = new QLabel(this);
+    TextBlockedlabel->setAlignment( Qt::AlignCenter );
+    QFont font( "Arial", 24, QFont::Bold);
+    TextBlockedlabel->setFont(font);
+    TextBlockedlabel->setText(QString("MERCI D'APPELER UN SURVEILLANT"));
+    setCentralWidget(TextBlockedlabel);
+    TextBlockedlabel->setVisible(false);
+
     /* Put webview in Main Window */
     setCentralWidget(webview);
 
@@ -338,6 +349,7 @@ void MainWindow::UnlockWebView() {
     SetupToolBarStyleFocusOn();
     bWebViewHidden = false;
     webview->setVisible(true);
+    //TextBlockedlabel->setVisible(false);
     PushButtonLeft->setEnabled(true);
 }
 
@@ -346,6 +358,7 @@ void MainWindow::LockWebView() {
     SetupToolBarStyleFocusOff();
     bWebViewHidden = true;
     webview->setVisible(false);
+    //TextBlockedlabel->setVisible(true);
     PushButtonLeft->setEnabled(false);
 }
 
