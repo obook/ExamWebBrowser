@@ -1,5 +1,5 @@
-rm -R ./bin/ExamWebBrowser_linux
-rm -R ./distribution/
+rm -Rf ./bin
+rm -Rf ./distribution
 mkdir -p ./bin/ExamWebBrowser_linux/images
 mkdir -p ./bin/ExamWebBrowser_linux/images
 mkdir -p ./distribution
