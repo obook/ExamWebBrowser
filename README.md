@@ -25,3 +25,5 @@ Vous pouvez configurer le logiciel en éditant le fichier ExamWebBrowser.ini cr�
 <p align="center">
     <a href='https://www.smb33.fr/' target='_blank'><img src="./images/ScreenShot.gif"  width="700"></a>
 </p>
+
+Téléchargement des binaires : <a href='https://smb33.keosystems.com/ewb/' target='_blank'>https://smb33.keosystems.com/ewb/</a>
