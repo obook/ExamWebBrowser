@@ -14,6 +14,7 @@
 #include <QWebEngineCookieStore>
 #include <QMessageBox>
 #include <QWebEnginePage>
+#include <QStackedWidget>
 
 #include "toolbar.h"
 #include "settings.h"
@@ -71,6 +72,7 @@ private:
     QWebEnginePage * page;
     RequestInterceptor *interceptor;
     QWebEngineProfile * profile;
+    QStackedWidget *stackedWidget;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;

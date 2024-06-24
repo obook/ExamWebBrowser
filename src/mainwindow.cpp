@@ -25,6 +25,7 @@ https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
     setWindowTitle("ExamWebBrowser");
 
     /* Toobar */
@@ -58,41 +59,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     profile->setUrlRequestInterceptor(interceptor);
     page = new QWebEnginePage(profile, webview);
     webview->setPage(page);
+    webview->setUrl(QUrl(pSettings.GetUrl()));
+    //webview->load(QUrl(pSettings.GetUrl()));
+    //webview->reload();
 
-    /* User agent
-    profile->setHttpUserAgent(webview->page()->profile()->httpUserAgent()+" SEB/3.7.1 (NewGeneration)");
-    qDebug() << "user-agent=" + webview->page()->profile()->httpUserAgent();
-    */
-
-
-    /* Blocked Text (Label)
-     * See QStackedWidget for implementation
-     * https://stackoverflow.com/questions/2840009/problem-with-qmainwindow-setcentralwidget-and-stackedwidget
-
+    /* Blocked Text (Label)  */
     TextBlockedlabel = new QLabel(this);
     TextBlockedlabel->setAlignment( Qt::AlignCenter );
     QFont font( "Arial", 24, QFont::Bold);
     TextBlockedlabel->setFont(font);
     TextBlockedlabel->setText(QString("MERCI D'APPELER UN SURVEILLANT"));
-    setCentralWidget(TextBlockedlabel);
-    TextBlockedlabel->setVisible(false);
-    */
 
-    /* Put webview in Main Window */
-    setCentralWidget(webview);
+    /* QStackedWidget */
+    stackedWidget = new QStackedWidget(this);
+    stackedWidget->addWidget(TextBlockedlabel);
+    stackedWidget->addWidget(webview);
+    stackedWidget->setCurrentIndex(1);
 
-    webview->setUrl(QUrl(pSettings.GetUrl()));
-    //webview->load(QUrl(pSettings.GetUrl()));
-    //webview->reload();
+    setCentralWidget(stackedWidget);
 
     UnlockWebView();
 
-    /* Network */
-
+    /* Network - not used */
     // pNetclient = new network_client();
 
     /* Timers */
-
     FocusTimer = new QTimer(this);
     connect(FocusTimer, SIGNAL(timeout()), this,SLOT(onFocusTimer()));
     FocusTimer->start(1000);
@@ -104,15 +95,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     updateNetwork();
 
     /* Variables */
-
     bFocusLostCounter = 0;
     DialogRun = false;
 
     installEventFilter(this);
 }
 
-void MainWindow::setupToolBar()
-{
+void MainWindow::setupToolBar() {
     toolbar = (ToolBar*)addToolBar(tr(""));
     toolbar->setFloatable(false);
     toolbar->setMovable(false);
@@ -124,8 +113,7 @@ void MainWindow::setupToolBar()
     SetupToolBarStyleFocusOn();
     // not used : connect(toolbar , SIGNAL(clicked()), this, SLOT(onToolbarClicked()));
 
-    /* Left home button */
-
+    /* Toolbar Left home button */
     PushButtonLeft = new QPushButton(this);
     QPixmap pixmap("images/home.svg");
     QIcon ButtonIcon(pixmap);
@@ -133,32 +121,26 @@ void MainWindow::setupToolBar()
     toolbar->addWidget(PushButtonLeft);
     connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
 
-    /* Separator */
-
+    /* Toolbar Separator */
     QWidget *spacerWidget1 = new QWidget(this);
     spacerWidget1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget1->setVisible(true);
     toolbar->addWidget(spacerWidget1);
 
     /* Toolbar title */
-
     QLabel *Label = new ClickableLabel(this);
-
-    QString MainUrl = pSettings.GetUrl();
-
     Label->setText(pSettings.GetAppName());
-    // Label->setStyleSheet("QLabel { background-color : black; color : white; }");
     Label->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
     toolbar->addWidget(Label);
     connect(Label , SIGNAL(clicked()), this, SLOT(onLabelClicked()));
 
+    /* Toolbar Separator */
     QWidget *spacerWidget2 = new QWidget(this);
     spacerWidget2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget2->setVisible(true);
     toolbar->addWidget(spacerWidget2);
 
-    /* Right clock button */
-
+    /* Toolbar Right clock button */
     PushButtonRight = new ClickableButton(this);
     PushButtonRight->setFlat(true);
     PushButtonRight->setStyleSheet("* { background-color: rgba(0,125,0,0) }");
@@ -189,21 +171,6 @@ void MainWindow::CodeInputDialog() {
     bool ok;
     QInputDialog InputDialog = new QInputDialog;
     InputDialog.setWindowTitle("EWB");
-    /*
-    InputDialog.setCancelButtonText(QString("Abandon"));
-    InputDialog.setOkButtonText(QString("Valider"));
-
-    //InputDialog.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    InputDialog.setLabelText();
-    InputDialog.button(QMessageBox::Ok)->setText("Quitter");
-    InputDialog.button(QMessageBox::Cancel)->setText("Rester");
-
-    InputDialog.setDefaultButton(QMessageBox::Ok);
-
-    InputDialog.setOkButtonText("Valider");
-    InputDialog.setCancelButtonText("Abandon");
-*/
-
     InputDialog.setCancelButtonText(QString("Abandon")); // Do not work
     InputDialog.setOkButtonText(QString("Valider")); // Do not work
 
@@ -294,6 +261,7 @@ void MainWindow::SetupToolBarStyleFocusOff() {
 void MainWindow::handleButtonLeft() {
     DialogRun = true;
     bFocusLostCounter--;
+
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Revenir à l'accueil?");
@@ -352,8 +320,7 @@ void MainWindow::UnlockWebView() {
     bFocusLost = false;
     SetupToolBarStyleFocusOn();
     bWebViewHidden = false;
-    webview->setVisible(true);
-    //TextBlockedlabel->setVisible(false);
+    stackedWidget->setCurrentIndex(1);
     PushButtonLeft->setEnabled(true);
 }
 
@@ -361,14 +328,12 @@ void MainWindow::LockWebView() {
     bFocusLost = true;
     SetupToolBarStyleFocusOff();
     bWebViewHidden = true;
-    webview->setVisible(false);
-    //TextBlockedlabel->setVisible(true);
+    stackedWidget->setCurrentIndex(0);
     PushButtonLeft->setEnabled(false);
 }
 
 /* Détection de la perte de focus */
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == this ){
         switch (event->type()) {
         case QEvent::WindowActivate:
@@ -405,13 +370,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QWidget::eventFilter(obj, event);
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
-{
+void MainWindow::closeEvent(QCloseEvent * event) {
     event->ignore();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete page;
     delete profile;
     delete ui;
