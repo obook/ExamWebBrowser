@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     webview->setContextMenuPolicy(Qt::NoContextMenu);
 
     QWebEngineProfile *engineProfile = webview->page()->profile();
-    // engineProfile->clearHttpCache(); // Load = blocked
+    engineProfile->clearHttpCache(); // Load = blocked ?
     engineProfile->clearAllVisitedLinks();
     engineProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
     engineProfile->setHttpCacheType(QWebEngineProfile::NoCache);
