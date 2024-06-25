@@ -39,7 +39,7 @@ QString Settings::GetUrl() {
     return MainUrl;
 }
 
-QString Settings::GetServerIP() {
+QString Settings::GetServerIP() { /* Not used */
     ServerIP = pSettings->value("ServerIP").toString();
     if(ServerIP==""){
         ServerIP = "127.0.01";
@@ -48,7 +48,7 @@ QString Settings::GetServerIP() {
     return ServerIP;
 }
 
-QString Settings::GetServerPort() {
+QString Settings::GetServerPort() { /* Not used */
     ServerPort = pSettings->value("ServerPort").toString();
     if(ServerPort==""){
         ServerPort = "127.0.01";
