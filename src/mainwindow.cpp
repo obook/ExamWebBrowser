@@ -59,7 +59,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     profile->setUrlRequestInterceptor(interceptor);
     page = new QWebEnginePage(profile, webview);
     webview->setPage(page);
-    webview->setUrl(QUrl(pSettings.GetUrl()));
+
+    /* Default URL founded in ExamWebBrowser.ini */
+    QString URL = pSettings.GetUrl();
+    if(URL == "notice.html") {
+        webview->load(QUrl::fromLocalFile(QApplication::applicationDirPath() + "/notice.html"));
+    }
+    else {
+        webview->setUrl(QUrl(URL));
+    }
+
     //webview->load(QUrl(pSettings.GetUrl()));
     //webview->reload();
 

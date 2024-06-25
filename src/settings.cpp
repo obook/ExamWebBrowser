@@ -1,15 +1,39 @@
 #include "settings.h"
+#include <QFile>
+#include "QCoreApplication"
 
 Settings::Settings(QObject *parent)
     : QObject{parent}
 {
+    QString index(QCoreApplication::applicationDirPath() + "/notice.html");
+
     pSettings = new QSettings("ExamWebBrowser.ini",QSettings::IniFormat);
+    if ( !QFile::exists(index) ) {
+        QFile notice(index);
+        notice.open(QFile::WriteOnly | QFile::Text);
+        QString html("<!DOCTYPE html>"
+                     "<html lang='Fr'>"
+                     "<head>"
+                     "<meta charset='utf-8'>"
+                     "<title></title>"
+                     "</head>"
+                     "<body>"
+                     "<header></header>"
+                     "<main><p>Quitter le programme avec un clic droit sur l'horloge</p>"
+                     "<p>Éditer le fichier ExamWebBrowser.ini et changer la valeur 'URL'</p>"
+                     "<p>Relancer le programme</p></main>"
+                     "<footer></footer>"
+                     "</body>"
+                     "</html>");
+        notice.write(html.toUtf8());
+        notice.close();
+    }
 }
 
 QString Settings::GetUrl() {
     MainUrl = pSettings->value("URL").toString();
     if(MainUrl==""){
-        MainUrl = "https://moodle-4.0.7.keosystems.com/html/login/index.php";
+        MainUrl = "notice.html";
         pSettings->setValue("URL", MainUrl);
     }
     return MainUrl;
