@@ -1,6 +1,9 @@
+/*
+ * network_client.cpp : not used
+ *
+ * */
+
 #include "network_client.h"
-
-
 
 network_client::network_client(QObject *parent)
     : QObject{parent}

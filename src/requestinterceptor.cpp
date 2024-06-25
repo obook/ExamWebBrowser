@@ -1,3 +1,8 @@
+/*
+ * requestinterceptor.cpp
+ *
+ * */
+
 #include "requestinterceptor.h"
 #include <QDebug>
 

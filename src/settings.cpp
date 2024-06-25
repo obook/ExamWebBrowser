@@ -1,3 +1,8 @@
+/*
+ * settings.cpp
+ *
+ * */
+
 #include "settings.h"
 #include <QFile>
 #include "QCoreApplication"

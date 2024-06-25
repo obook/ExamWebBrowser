@@ -1,3 +1,8 @@
+/*
+ * clickablebutton.cpp
+ *
+ * */
+
 #include "clickablebutton.h"
 #include <QMouseEvent>
 

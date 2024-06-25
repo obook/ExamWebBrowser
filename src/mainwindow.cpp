@@ -1,3 +1,8 @@
+/*
+ * mainwindows.cpp
+ *
+ * */
+
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
@@ -7,21 +12,6 @@
 #include <QLayout>
 #include <QWebEngineProfile>
 #include <QWebEngineUrlRequestInterceptor>
-
-/*
- * mainwindows.cpp
- *
- * */
-
-/*
-
-Todo :
-
-Voir
-https://blog.csdn.net/CHAMSDONCON/article/details/124403358
-https://cpp.hotexamples.com/examples/-/QWebEnginePage/-/cpp-qwebenginepage-class-examples.html
-
-*/
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -68,9 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     else {
         webview->setUrl(QUrl(URL));
     }
-
-    //webview->load(QUrl(pSettings.GetUrl()));
-    //webview->reload();
 
     /* Blocked Text (Label)  */
     TextBlockedlabel = new QLabel(this);

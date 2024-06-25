@@ -1,3 +1,8 @@
+/*
+ * clickablelabel.cpp
+ *
+ * */
+
 #include "clickablelabel.h"
 
 ClickableLabel::ClickableLabel(QWidget* parent, Qt::WindowFlags f)
