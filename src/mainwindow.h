@@ -39,10 +39,23 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QWebEngineView *webview;
+
+    QWebEngineView *MoodleWebview;
+    QWebEnginePage * MoodlePage;
+    RequestInterceptor *MoodleInterceptor;
+    QWebEngineProfile * MoodleProfile;
+
+
+    QWebEngineView *BasthonWebview;
+    QWebEnginePage *BasthonPage;
+    RequestInterceptor *BasthonInterceptor;
+    QWebEngineProfile * BasthonProfile;
+
     ToolBar* toolbar;
     ClickableButton* PushButtonRight;
     QPushButton* PushButtonLeft;
+    QPushButton* PushButtonWeb;
+    QPushButton* PushButtonBasthon;
 
     QTimer *FocusTimer;
     QTimer *NetworkTimer;
@@ -69,9 +82,6 @@ private:
     bool DialogRun;
     int bFocusLostCounter;
     QLabel *TextBlockedlabel;
-    QWebEnginePage * page;
-    RequestInterceptor *interceptor;
-    QWebEngineProfile * profile;
     QStackedWidget *stackedWidget;
 
 protected:
@@ -87,6 +97,8 @@ public slots :
     void onLabelClicked();
     void onButtonRightClicked();
     void onButtonLeftClicked();
+    void onPushButtonWeb();
+    void onPushButtonBasthon();
 };
 
 #endif // MAINWINDOW_H

@@ -13,6 +13,10 @@
 #include <QWebEngineProfile>
 #include <QWebEngineUrlRequestInterceptor>
 
+#define OngletSurveillant 0
+#define OngletWeb 1
+#define OngletBasthon 2
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
@@ -21,42 +25,60 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     /* Toobar */
     setupToolBar();
 
-    /* WebEngine */
-    webview = new QWebEngineView(this);
-    webview->setContextMenuPolicy(Qt::NoContextMenu);
+    /* WebEngine for Moodle */
+    MoodleWebview = new QWebEngineView(this);
+    MoodleWebview->setContextMenuPolicy(Qt::NoContextMenu);
+/*
+    QWebEngineProfile *Mprofile = MoodleWebview->page()->profile();
+    Mprofile->clearHttpCache(); // Load = blocked ?
+    Mprofile->clearAllVisitedLinks();
+    Mprofile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    Mprofile->setHttpCacheType(QWebEngineProfile::NoCache);
 
-    QWebEngineProfile *engineProfile = webview->page()->profile();
-    engineProfile->clearHttpCache(); // Load = blocked ?
-    engineProfile->clearAllVisitedLinks();
-    engineProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
-    engineProfile->setHttpCacheType(QWebEngineProfile::NoCache);
-
-    QWebEngineCookieStore * pCookie = engineProfile->cookieStore();
+    QWebEngineCookieStore * pCookie = Mprofile->cookieStore();
     pCookie->deleteAllCookies();
     pCookie->deleteSessionCookies();
-
-    connect(webview, &QWebEngineView::loadStarted, [] {
+*/
+    connect(MoodleWebview, &QWebEngineView::loadStarted, [] {
         QApplication::setOverrideCursor(Qt::BusyCursor);
     });
 
-    connect(webview, &QWebEngineView::loadFinished, [] {
+    connect(MoodleWebview, &QWebEngineView::loadFinished, [] {
         QApplication::restoreOverrideCursor();
     });
 
-    /* Interceptor */
-    interceptor = new RequestInterceptor(webview);
-    profile = new QWebEngineProfile(webview);
-    profile->setUrlRequestInterceptor(interceptor);
-    page = new QWebEnginePage(profile, webview);
-    webview->setPage(page);
+    /* WebEngine for Basthon */
+    BasthonWebview = new QWebEngineView(this);
+    BasthonWebview->setContextMenuPolicy(Qt::NoContextMenu);
+
+
+
+    /* Interceptors */
+    MoodleProfile = new QWebEngineProfile(MoodleWebview);
+    MoodleInterceptor = new RequestInterceptor(MoodleWebview);
+    MoodleProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    MoodleProfile->setHttpCacheType(QWebEngineProfile::NoCache);
+    MoodleProfile->setUrlRequestInterceptor(MoodleInterceptor);
+    MoodlePage = new QWebEnginePage(MoodleProfile, MoodleWebview);
+    MoodleWebview->setPage(MoodlePage);
+
+    BasthonProfile = new QWebEngineProfile(BasthonWebview);
+    BasthonInterceptor = new RequestInterceptor(BasthonWebview);
+    BasthonProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    BasthonProfile->setHttpCacheType(QWebEngineProfile::NoCache);
+    BasthonProfile->setUrlRequestInterceptor(MoodleInterceptor);
+    BasthonPage = new QWebEnginePage(BasthonProfile, BasthonWebview);
+    BasthonWebview->setPage(BasthonPage);
+    BasthonWebview->setUrl(QUrl("https://basthon.fr/"));
+    BasthonWebview->reload();
 
     /* Default URL founded in ExamWebBrowser.ini */
     QString URL = pSettings.GetUrl();
     if(URL == "notice.html") {
-        webview->load(QUrl::fromLocalFile(QApplication::applicationDirPath() + "/notice.html"));
+        MoodleWebview->load(QUrl::fromLocalFile(QApplication::applicationDirPath() + "/notice.html"));
     }
     else {
-        webview->setUrl(QUrl(URL));
+        MoodleWebview->setUrl(QUrl(URL));
     }
 
     /* Blocked Text (Label)  */
@@ -68,9 +90,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     /* QStackedWidget */
     stackedWidget = new QStackedWidget(this);
-    stackedWidget->addWidget(TextBlockedlabel);
-    stackedWidget->addWidget(webview);
-    stackedWidget->setCurrentIndex(1);
+    stackedWidget->addWidget(TextBlockedlabel); /* 0 */
+    stackedWidget->addWidget(MoodleWebview); /* 1 */
+    stackedWidget->addWidget(BasthonWebview); /* 2 */
+    stackedWidget->setCurrentIndex(0); /* ne sert à rien ici ... */
 
     setCentralWidget(stackedWidget);
 
@@ -116,6 +139,19 @@ void MainWindow::setupToolBar() {
     PushButtonLeft->setIcon(ButtonIcon);
     toolbar->addWidget(PushButtonLeft);
     connect(PushButtonLeft, &QPushButton::released, this, &MainWindow::handleButtonLeft);
+
+    /* Two buttons : Web and Python online */
+    PushButtonWeb = new QPushButton(this);
+    PushButtonWeb->setText("MOODLE");
+    toolbar->addWidget(PushButtonWeb);
+    connect(PushButtonWeb, &QPushButton::released, this, &MainWindow::onPushButtonWeb);
+
+    PushButtonBasthon = new QPushButton(this);
+    PushButtonBasthon->setText("BASTHON");
+    toolbar->addWidget(PushButtonBasthon);
+    connect(PushButtonBasthon, &QPushButton::released, this, &MainWindow::onPushButtonBasthon);
+    /* For instance ... */
+    PushButtonBasthon->setEnabled(false);
 
     /* Toolbar Separator */
     QWidget *spacerWidget1 = new QWidget(this);
@@ -258,19 +294,28 @@ void MainWindow::handleButtonLeft() {
     DialogRun = true;
     bFocusLostCounter--;
 
+    qDebug() << "Index courant =" << stackedWidget->currentIndex();
+
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Revenir à l'accueil?");
-    msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
-     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    //msgBox.setInformativeText("Tout travail non enregistré sera perdu.");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.button(QMessageBox::Ok)->setText("Oui");
     msgBox.button(QMessageBox::Cancel)->setText("Non");
     msgBox.setDefaultButton(QMessageBox::Cancel);
     msgBox.setIcon(QMessageBox::Warning);
     if( msgBox.exec() == QMessageBox::Ok ) {
-        webview->load(QUrl(pSettings.GetUrl()));
-        if(!bFocusLostCounter) {
-            UnlockWebView();
+
+        if ( stackedWidget->currentIndex() == OngletWeb ) {
+            MoodleWebview->load(QUrl(pSettings.GetUrl()));
+            if(!bFocusLostCounter) {
+                UnlockWebView();
+            }
+        }
+        else {
+            qDebug() << "On recharge Basthon";
+            BasthonWebview->load(QUrl("https://basthon.fr/"));
         }
     }
     else {
@@ -279,6 +324,20 @@ void MainWindow::handleButtonLeft() {
         }
     }
     DialogRun = false;
+}
+
+void MainWindow::onPushButtonWeb() {
+    stackedWidget->setCurrentIndex(1);
+    PushButtonWeb->setStyleSheet("QPushButton { background-color : blue }");
+    PushButtonBasthon->setStyleSheet("QPushButton { background-color : normal }");
+    // PushButtonLeft->setEnabled(true);
+}
+
+void MainWindow::onPushButtonBasthon() {
+    stackedWidget->setCurrentIndex(2);
+    PushButtonWeb->setStyleSheet("QPushButton { background-color : normal }");
+    PushButtonBasthon->setStyleSheet("QPushButton { background-color : blue }");
+    // PushButtonLeft->setEnabled(false);
 }
 
 void MainWindow::onFocusTimer() {
@@ -303,11 +362,13 @@ void MainWindow::updateToolBar() {
     }
 }
 
+/* Not used */
 void MainWindow::onNetworkTimer() {
     //qDebug() << "EndNetworkTimer";
     updateNetwork();
 }
 
+/* Not used */
 void MainWindow::updateNetwork() {
     // qDebug() << "updateNetwork";
 }
@@ -318,6 +379,8 @@ void MainWindow::UnlockWebView() {
     bWebViewHidden = false;
     stackedWidget->setCurrentIndex(1);
     PushButtonLeft->setEnabled(true);
+    PushButtonWeb->setStyleSheet("QPushButton { background-color : blue }");
+    PushButtonBasthon->setStyleSheet("QPushButton { background-color : normal }");
 }
 
 void MainWindow::LockWebView() {
@@ -330,6 +393,7 @@ void MainWindow::LockWebView() {
 
 /* Détection de la perte de focus */
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+
     if (obj == this ){
         switch (event->type()) {
         case QEvent::WindowActivate:
@@ -339,7 +403,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
                 SetupToolBarStyleFocusOff();
                 LockWebView();
                 bFocusLostCounter++;
-                // CodeInputDialog();
             }
             break;
         default:
@@ -347,22 +410,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
         }
     }
 
-    /* A terminer ...
-    else if (obj == PushButtonRight) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->buttons() & Qt::LeftButton && mouseEvent->modifiers() == Qt::ShiftModifier) {
-
-            QDateTime date = QDateTime::currentDateTime();
-            QString formattedTime = date.toString("dd.MM.yyyy hh:mm:ss");
-            QByteArray formattedTimeMsg = formattedTime.toLocal8Bit();
-
-            //qDebug() << "Date:"+formattedTime +  "eventFilter PushButtonRight";
-
-            // handleButtonRight(); Loop
-
-            return QWidget::eventFilter(obj, event);
-        }
-    } */
     return QWidget::eventFilter(obj, event);
 }
 
@@ -371,7 +418,9 @@ void MainWindow::closeEvent(QCloseEvent * event) {
 }
 
 MainWindow::~MainWindow() {
-    delete page;
-    delete profile;
+    delete MoodlePage;
+    delete MoodleProfile;
+    delete BasthonPage;
+    delete BasthonProfile;
     delete ui;
 }

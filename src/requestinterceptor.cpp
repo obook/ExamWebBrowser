@@ -49,8 +49,19 @@ void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info) {
     QString RequestHost = info.requestUrl().host();
     QString SettingsHost = (QUrl(pSettings.GetUrl())).host();
 
-    if( RequestHost != SettingsHost && !info.requestUrl().toString().contains("mathjax",Qt::CaseInsensitive) ) {
+    if( RequestHost != SettingsHost
+        && !info.requestUrl().toString().contains("mathjax",Qt::CaseInsensitive)
+        && !info.requestUrl().toString().contains("basthon.fr",Qt::CaseInsensitive)
+        && !info.requestUrl().toString().contains("jsdelivr.net",Qt::CaseInsensitive)
+        && !info.requestUrl().toString().contains("education.fr",Qt::CaseInsensitive)
+        ) {
+            qDebug() << "/!\\ HÔTE" << RequestHost << "HORS DOMAINE BLOQUÉ (" << info.requestUrl().toString() << ")";
+            info.block(true);
+    }
+/*
+    if( RequestHost != SettingsHost
+        && !info.requestUrl().toString().contains("mathjax",Qt::CaseInsensitive) ) {
         qDebug() << "/!\\ HÔTE" << RequestHost << "HORS DOMAINE BLOQUÉ (" << info.requestUrl().toString() << ")";
         info.block(true);
-    }
+    }*/
 }
