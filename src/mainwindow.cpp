@@ -294,8 +294,6 @@ void MainWindow::handleButtonLeft() {
     DialogRun = true;
     bFocusLostCounter--;
 
-    qDebug() << "Index courant =" << stackedWidget->currentIndex();
-
     QMessageBox msgBox;
     msgBox.setWindowTitle("EWB");
     msgBox.setText("Revenir à l'accueil?");
