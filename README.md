@@ -5,6 +5,11 @@
 Navigateur Web ultra simplifié avec mode examen pour l'Ensemble Scolaire Sainte-Marie Bastide à Bordeaux.
 Il est utilisé avec le module de QCM en ligne Moodle (activité *test*) en salle informatique sous la surveillance de l'enseignant.
 
+> [!CAUTION]  
+> Le programme  doit être lancé à partir d'un stockage local.
+> 
+> Il ne fonctionne pas à partir d'un stockage réseau en raison de la sécurité de Windows sur le chargement des dll.
+
 Fonctionnalités principales :
 
 * Une seule fenêtre en plein écran, pas de bouton de fermeture, aucun réglage possible
