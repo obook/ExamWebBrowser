@@ -1,11 +1,8 @@
 #!/bin/sh
 clear
-export PATH="~/Qt/Tools/CMake/bin:$PATH"
+export PATH="$HOME/Qt/Tools/CMake/bin:$PATH"
 echo $PATH
-cd ./Linux-Release
-#~/Qt/Tools/CMake/bin/cmake -version
-# cmake version 3.27.7
 # configure
-~/Qt/Tools/CMake/bin/cmake -S ~/Documents/GitHub/WebExaMod/src -B ~/Documents/GitHub/WebExaMod/build/Linux-Release
+$HOME/Qt/Tools/CMake/bin/cmake -DCMAKE_PREFIX_PATH="$HOME/Qt/6.7.0/gcc_64" -S "$HOME/Documents/GitHub/ExamWebBrowser/src" -B "$HOME/Documents/GitHub/ExamWebBrowser/build/linux"
 # compile
-cmake --build ~/Documents/GitHub/WebExaMod/build/Linux-Release --target all
+cmake --build "$HOME/Documents/GitHub/ExamWebBrowser/build/linux" --target all

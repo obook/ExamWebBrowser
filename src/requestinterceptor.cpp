@@ -28,6 +28,9 @@ https://sourceforge.net/p/seb/discussion/844844/thread/74d5abe02e/
 
 void RequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info) {
 
+    /* ExamWebBrowser custom header for Moodle plugin detection */
+    info.setHttpHeader("X-ExamWebBrowser", "1.0");
+
     /* Try to be SEB compatible
 
     // config key CK

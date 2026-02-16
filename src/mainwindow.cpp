@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     MoodleInterceptor = new RequestInterceptor(MoodleWebview);
     MoodleProfile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
     MoodleProfile->setHttpCacheType(QWebEngineProfile::NoCache);
+    MoodleProfile->setHttpUserAgent(MoodleProfile->httpUserAgent() + " ExamWebBrowser/1.0");
     MoodleProfile->setUrlRequestInterceptor(MoodleInterceptor);
     MoodlePage = new QWebEnginePage(MoodleProfile, MoodleWebview);
     MoodleWebview->setPage(MoodlePage);
