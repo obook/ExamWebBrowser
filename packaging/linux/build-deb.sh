@@ -44,6 +44,5 @@ cp "$SCRIPT_DIR/examwebbrowser.desktop" "$ROOT/usr/share/applications/"
 
 # Build the .deb
 dpkg-deb --build --root-owner-group "$ROOT"
-mv "$PKG.deb" "$REPO_ROOT/"
 
 echo "Built: $REPO_ROOT/$PKG.deb"
