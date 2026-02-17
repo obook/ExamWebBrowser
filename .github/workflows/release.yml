@@ -1,4 +1,4 @@
-name: Build & Release .deb
+name: Build & Release
 
 on:
   push:
@@ -48,3 +48,45 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: examwebbrowser_*.deb
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.*'
+          modules: 'qtwebengine qtwebchannel qtpositioning'
+
+      - name: Configure CMake
+        shell: cmd
+        run: cmake -S src -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build --config Release --parallel
+
+      - name: Package with windeployqt
+        shell: cmd
+        run: |
+          mkdir dist\images
+          copy build\Release\ExamWebBrowser.exe dist\
+          copy images\ExamWebBrowser.png dist\images\
+          copy images\home.svg dist\images\
+          copy images\logo.svg dist\images\
+          windeployqt --release --no-translations dist\ExamWebBrowser.exe
+
+      - name: Create zip
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          Compress-Archive -Path dist\* -DestinationPath "ExamWebBrowser_${version}_win64.zip"
+
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ExamWebBrowser_*_win64.zip
