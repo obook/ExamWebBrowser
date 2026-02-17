@@ -12,3 +12,9 @@ sudo apt-get install qtbase5-dev qtdeclarative5-dev
 
 * ~~L'installation de l'extension sur le serveur Moodle 4.0.7 doit se faire par l'interface web d'administration avec une archive zip contenant le nécessaire.~~ **FAIT** — Archive `moodle-plugin/quizaccess_ewb.zip`
 
+## CI / Packaging Linux
+
+* ~~Créer un workflow GitHub Actions qui compile et produit un `.deb` lors d'un tag `v*`.~~ **FAIT** — `.github/workflows/release.yml`
+* ~~Créer un script d'assemblage du `.deb` installant sous `/opt/examwebbrowser/`.~~ **FAIT** — `packaging/linux/build-deb.sh`
+* ~~Créer un fichier `.desktop` pour le menu applications.~~ **FAIT** — `packaging/linux/examwebbrowser.desktop`
+
