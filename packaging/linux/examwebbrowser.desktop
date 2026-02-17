@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ExamWebBrowser
+Comment=Navigateur en mode examen
+Exec=/opt/examwebbrowser/ExamWebBrowser
+Icon=/opt/examwebbrowser/images/ExamWebBrowser.png
+Terminal=false
+Type=Application
+Categories=Education;WebBrowser;

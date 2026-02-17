@@ -1,0 +1,47 @@
+name: Build & Release .deb
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            qt6-base-dev \
+            qt6-webengine-dev \
+            qt6-tools-dev \
+            qt6-tools-dev-tools \
+            cmake \
+            build-essential \
+            dpkg-dev
+
+      - name: Configure CMake
+        run: |
+          cmake -S src -B build \
+            -DCMAKE_PREFIX_PATH=/usr \
+            -DCMAKE_INSTALL_PREFIX=/opt/examwebbrowser \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Build .deb package
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          chmod +x packaging/linux/build-deb.sh
+          packaging/linux/build-deb.sh "$VERSION" build/ExamWebBrowser
+
+      - name: Upload .deb to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: examwebbrowser_*.deb
