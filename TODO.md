@@ -18,3 +18,7 @@ sudo apt-get install qtbase5-dev qtdeclarative5-dev
 * ~~Créer un script d'assemblage du `.deb` installant sous `/opt/examwebbrowser/`.~~ **FAIT** — `packaging/linux/build-deb.sh`
 * ~~Créer un fichier `.desktop` pour le menu applications.~~ **FAIT** — `packaging/linux/examwebbrowser.desktop`
 
+## CI / Packaging Windows
+
+* ~~Ajouter un job Windows au workflow release (compilation MSVC + windeployqt + zip).~~ **FAIT** — Job `build-windows` dans `.github/workflows/release.yml`
+
