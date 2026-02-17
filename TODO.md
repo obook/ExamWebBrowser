@@ -21,4 +21,5 @@ sudo apt-get install qtbase5-dev qtdeclarative5-dev
 ## CI / Packaging Windows
 
 * ~~Ajouter un job Windows au workflow release (compilation MSVC + windeployqt + zip).~~ **FAIT** — Job `build-windows` dans `.github/workflows/release.yml`
+* ~~Tester le build Windows avec un tag v1.1.0.~~ **FAIT** — Build réussi, `.zip` disponible dans la release
 

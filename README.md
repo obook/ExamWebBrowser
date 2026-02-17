@@ -70,4 +70,19 @@ L'exécutable est généré dans `build/linux/`.
 
 ## ⬇️ Téléchargement
 
-Téléchargement des binaires : <a href='https://smb33.keosystems.com/ewb/' target='_blank'>https://smb33.keosystems.com/ewb/</a>
+Les installateurs Linux (`.deb`) et Windows (`.zip`) sont générés automatiquement à chaque release via GitHub Actions.
+
+Téléchargement depuis les **[Releases GitHub](https://github.com/obook/ExamWebBrowser/releases)**.
+
+### Linux (.deb)
+
+```bash
+sudo dpkg -i examwebbrowser_*.deb
+sudo apt-get -f install   # pour les dépendances Qt6
+```
+
+L'application est installée dans `/opt/examwebbrowser/` avec un lien `/usr/bin/examwebbrowser` et une entrée dans le menu applications.
+
+### Windows (.zip)
+
+Extraire l'archive et lancer `ExamWebBrowser.exe`. Toutes les DLLs Qt sont incluses, aucune installation requise.
