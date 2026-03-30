@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         run: |
@@ -45,7 +45,7 @@ jobs:
           packaging/linux/build-deb.sh "$VERSION" build/ExamWebBrowser
 
       - name: Upload .deb to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: examwebbrowser_*.deb
 
@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Qt 6
         uses: jurplel/install-qt-action@v4
@@ -87,6 +87,6 @@ jobs:
           Compress-Archive -Path dist\* -DestinationPath "ExamWebBrowser_${version}_win64.zip"
 
       - name: Upload zip to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ExamWebBrowser_*_win64.zip
