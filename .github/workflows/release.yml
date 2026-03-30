@@ -30,7 +30,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -S src -B build \
+          cmake -S sources -B build \
             -DCMAKE_PREFIX_PATH=/usr \
             -DCMAKE_INSTALL_PREFIX=/opt/examwebbrowser \
             -DCMAKE_BUILD_TYPE=Release
@@ -64,7 +64,7 @@ jobs:
 
       - name: Configure CMake
         shell: cmd
-        run: cmake -S src -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S sources -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         shell: cmd

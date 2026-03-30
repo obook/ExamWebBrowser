@@ -1,4 +1,4 @@
-build/
+**/build/
 bin/
 distribution/
-src/CMakeLists.txt.user*
+sources/CMakeLists.txt.user*

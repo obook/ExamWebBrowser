@@ -1,6 +1,6 @@
 rmdir /S /Q .\bin\Windows\
 mkdir .\bin\Windows\images
-xcopy /Y .\src\build\Desktop_Qt_6_7_0_MSVC2019_64bit-Release\ExamWebBrowser.exe .\bin\Windows\
+xcopy /Y .\sources\build\Desktop_Qt_6_7_0_MSVC2019_64bit-Release\ExamWebBrowser.exe .\bin\Windows\
 xcopy /Y .\images\ExamWebBrowser.png .\bin\Windows\images
 xcopy /Y .\images\home.svg .\bin\Windows\images
 REM del .\bin\Windows\ExamWebBrowser.ini
