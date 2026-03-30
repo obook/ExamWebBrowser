@@ -10,7 +10,7 @@ Il est utilisé avec le module de QCM en ligne Moodle (activité *test*) en sall
 >
 > Il ne fonctionne pas à partir d'un stockage réseau en raison de la sécurité de Windows sur le chargement des dll.
 
-## ✨ Fonctionnalités principales
+## Fonctionnalités principales
 
 | | Fonctionnalité |
 |---|---|
@@ -24,11 +24,11 @@ Il est utilisé avec le module de QCM en ligne Moodle (activité *test*) en sall
 | ⌨️ | Raccourcis clavier désactivés |
 | 🎓 | **Plugin Moodle** : restriction d'accès aux tests pour n'autoriser que ExamWebBrowser |
 
-## 📦 Installation
+## Installation
 
 Autonome (*standalone*), il ne nécessite aucune installation. Il peut être placé sur une clé USB, mais **pas sur un lecteur réseau Microsoft Windows** (*mapped drive* = dll non chargées).
 
-## 🔧 Configuration
+## Configuration
 
 Vous pouvez configurer le navigateur en éditant le fichier `ExamWebBrowser.ini` créé au premier lancement.
 
@@ -38,29 +38,29 @@ La sortie du programme et l'entrée du code de déverrouillage se font respectiv
     <a href='https://www.smb33.fr/' target='_blank'><img src="./images/ScreenShot.gif"  width="700"></a>
 </p>
 
-## 🎓 Plugin Moodle (quizaccess_ewb)
+## Plugin Moodle (quizaccess_ewb)
 
 Un plugin Moodle de type *quiz access rule* est fourni dans `moodle-plugin/`. Il permet de restreindre l'accès à une activité *test* aux seuls élèves utilisant ExamWebBrowser, de manière similaire à Safe Exam Browser (SEB).
 
-### ⚙️ Fonctionnement
+### Fonctionnement
 
 Le navigateur ExamWebBrowser envoie un User-Agent contenant `ExamWebBrowser/1.0`. Le plugin Moodle vérifie la présence de cette chaîne et bloque l'accès au test si elle est absente. Les enseignants et administrateurs sont automatiquement exemptés de cette vérification.
 
-### 📥 Installation sur Moodle 4.x
+### Installation sur Moodle 4.x
 
 1. Récupérer l'archive `moodle-plugin/quizaccess_ewb.zip`
 2. Dans Moodle, aller dans **Administration du site > Extensions > Installer des extensions**
 3. Déposer l'archive zip et suivre les étapes de validation
 4. Moodle installe le plugin et met à jour la base de données
 
-### 🚀 Utilisation
+### Utilisation
 
 1. Modifier un test (*quiz*) dans Moodle
 2. Dans les paramètres du test, repérer l'option **Exiger ExamWebBrowser** et la mettre à **Oui**
-3. 🚫 Les élèves avec un navigateur classique verront un message d'erreur
-4. ✅ Les élèves utilisant ExamWebBrowser pourront passer le test normalement
+3. Les élèves avec un navigateur classique verront un message d'erreur
+4. Les élèves utilisant ExamWebBrowser pourront passer le test normalement
 
-## 🔨 Compilation
+## Compilation
 
 ```bash
 ./build_Linux.sh
@@ -68,7 +68,7 @@ Le navigateur ExamWebBrowser envoie un User-Agent contenant `ExamWebBrowser/1.0`
 
 L'exécutable est généré dans `build/linux/`.
 
-## ⬇️ Téléchargement
+## Téléchargement
 
 Les installateurs Linux (`.deb`) et Windows (`.zip`) sont générés automatiquement à chaque release via GitHub Actions.
 
