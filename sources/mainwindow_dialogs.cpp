@@ -6,6 +6,7 @@
  */
 
 #include "mainwindow.h"
+#include <QCoreApplication>
 
 void MainWindow::showCodeInputDialog() {
     m_dialogRunning = true;
